@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f3ec;
+  --foreground: #1c2420;
+  --surface: #fffdf8;
+  --surface-muted: #ebe4d6;
+  --border: #d5ccba;
+  --primary: #1f5c45;
+  --primary-hover: #174a37;
+  --primary-soft: #dceee4;
+  --accent-amber: #c47b1a;
+  --accent-teal: #2a6f7a;
+  --danger: #b42318;
+  --warning: #b54708;
+  --success: #1f5c45;
+  --wood: #8b5e34;
+  --sand: #cbb892;
+  --sky: #c5d9e3;
+  --grass: #6f9b6a;
+  --ad-slot: #e8e2d6;
+  --shadow-soft: 0 10px 30px rgba(28, 36, 32, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-teal: var(--accent-teal);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-wood: var(--wood);
+  --color-sand: var(--sand);
+  --color-sky: var(--sky);
+  --color-grass: var(--grass);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-fraunces);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, #dceee4 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #e8dcc8 0%, transparent 50%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), ui-sans-serif, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-sheet {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+.ad-slot {
+  background: var(--ad-slot);
+  border: 1px dashed var(--border);
+  color: #6b6558;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  min-height: 90px;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+.animate-soft-rise {
+  animation: soft-rise 0.5s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-soft-rise {
+    animation: none;
+  }
 }

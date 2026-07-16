@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fence Planner & Material Calculator
 
-## Getting Started
+Free, no-account web utility from **A Double M**: draw or enter a fence layout, preview a stylized Dream View, and print a materials list. Revenue model is AdSense-ready display ads outside the tool canvas.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- SVG Plan View + isometric SVG Dream View
+- Vitest for calculation engine tests
+- Browser `localStorage` persistence (no backend)
+
+## Scripts
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # local development
+npm run build    # production build
+npm test         # calculation unit tests
+npm run lint     # eslint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Architecture
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Area | Path |
+|------|------|
+| Domain types & units | `src/domain/` |
+| Calculators | `src/calc/` |
+| Warnings | `src/warnings/` |
+| Plan / Dream canvas | `src/canvas/` |
+| Persistence | `src/persistence/` |
+| Planner UI | `src/components/planner/` |
+| Guides & examples | `src/content/` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Single source of truth:** `FenceProject` drives Plan View, Dream View, and materials. Calculators never live inside UI components.
 
-## Learn More
+## MVP fence systems
 
-To learn more about Next.js, take a look at the following resources:
+1. Preassembled panel  
+2. Site-built wood privacy  
+3. Chain-link  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Assumptions (defaults)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Internal units: inches  
+- Panel width: 8 ft (panel-only + 4 in post unless mode is includes-post)  
+- Wood post spacing: 8 ft, 3 rails/span  
+- Concrete: cylindrical hole − square post volume; bag yield ≈ 0.33 ft³  
+- Waste: visible/editable; not applied silently to all categories  
 
-## Deploy on Vercel
+## Out of scope (MVP)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Live prices, retailer APIs, user accounts, paid features, satellite/lot detection, WebGL Dream View, property-image tracing.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## AdSense
+
+`AdSlot` placeholders reserve space. Never place ads inside Plan/Dream canvases or print output.
+
+## License / product
+
+Always free. Planning estimates only — see Terms and Methodology pages.
