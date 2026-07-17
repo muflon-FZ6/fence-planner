@@ -1,3 +1,4 @@
+import { defaultStyleFields } from "./styleDefaults";
 import { DEFAULT_BAG_YIELD_CU_IN, feetToInches } from "./units";
 import type {
   FenceProject,
@@ -8,6 +9,7 @@ import type {
 } from "./types";
 
 export function defaultSettings(fenceType: FenceType = "panel"): FenceSettings {
+  const style = defaultStyleFields(fenceType);
   const base: FenceSettings = {
     panelWidth: feetToInches(8),
     moduleWidthMode: "panel_only",
@@ -17,7 +19,6 @@ export function defaultSettings(fenceType: FenceType = "panel"): FenceSettings {
     fenceHeight: feetToInches(6),
     railsPerSpan: 3,
     picketWidth: 5.5,
-    picketGap: 0,
     holeDiameter: 12,
     holeDepth: 36,
     concreteBagYield: DEFAULT_BAG_YIELD_CU_IN,
@@ -30,13 +31,7 @@ export function defaultSettings(fenceType: FenceType = "panel"): FenceSettings {
     topRailSectionLength: feetToInches(21),
     tensionWire: true,
     tiesPerFoot: 1,
-    finish:
-      fenceType === "chain_link"
-        ? "galvanized"
-        : fenceType === "panel"
-          ? "natural_cedar"
-          : "natural_cedar",
-    boardOrientation: "vertical",
+    ...style,
   };
 
   if (fenceType === "wood_privacy") {
@@ -46,7 +41,6 @@ export function defaultSettings(fenceType: FenceType = "panel"): FenceSettings {
   if (fenceType === "chain_link") {
     base.postSpacing = feetToInches(10);
     base.fenceHeight = feetToInches(4);
-    base.finish = "galvanized";
   }
   return base;
 }
@@ -97,13 +91,19 @@ export function intentDefaults(intent: ProjectIntent): Partial<{
     case "pets":
       return {
         fenceType: "wood_privacy",
-        settings: { fenceHeight: feetToInches(5), picketGap: 0 },
+        settings: {
+          fenceHeight: feetToInches(5),
+          picketGap: 0,
+          boardPattern: "solid",
+          boardOrientation: "vertical",
+        },
       };
     case "modern":
       return {
         fenceType: "wood_privacy",
         settings: {
           boardOrientation: "horizontal",
+          boardPattern: "solid",
           finish: "charcoal",
           fenceHeight: feetToInches(6),
         },

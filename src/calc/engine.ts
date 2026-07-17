@@ -1,15 +1,40 @@
 import { calculateChainLink } from "./chainLink";
 import { calculateConcreteBags } from "./concrete";
+import { calculateFasteners } from "./fasteners";
 import { calculateGateHardware } from "./gates";
+import {
+  battenSpecLabel,
+  boardFaceLabel,
+  boardNominal,
+  boardStockFeet,
+  boardTopLabel,
+  capRailSpecLabel,
+  kickboardSpecLabel,
+  latticeSpecLabel,
+  panelSpecLabel,
+  postNominal,
+  postSpecLabel,
+  postStockFeet,
+  railSpecLabel,
+  trimSpecLabel,
+} from "./lumberSpec";
 import { calculatePanels } from "./panel";
-import { calculateWoodPrivacy } from "./woodPrivacy";
+import {
+  calculateWoodPrivacy,
+  type WoodPrivacyResult,
+} from "./woodPrivacy";
 import {
   classifyPosts,
   moduleWidth,
   totalFillLength,
   totalRunLength,
 } from "@/domain/geometry";
-import { formatLength, formatSmallLength, inchesToFeet } from "@/domain/units";
+import {
+  feetToInches,
+  formatLength,
+  formatSmallLength,
+  inchesToFeet,
+} from "@/domain/units";
 import type {
   FenceProject,
   MaterialLine,
@@ -58,70 +83,52 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
   );
   assumptions.push(`Waste allowance: ${project.settings.wastePercent}%`);
 
-  // Posts
-  lines.push({
-    id: "posts_total",
-    category: "posts",
-    label: "Posts (total)",
-    quantity: posts.total,
-    unit: "ea",
-    highlightKeys: ["post:all"],
-  });
-  if (posts.line)
+  const s = project.settings;
+  const postFace = postNominal(s.postWidth);
+  const postLenFt = postStockFeet(s);
+  const postBuyQty = Math.max(0, posts.total - posts.structure);
+  const roleBits = [
+    posts.line ? `${posts.line} line` : null,
+    posts.corner ? `${posts.corner} corner` : null,
+    posts.end ? `${posts.end} end` : null,
+    posts.gate ? `${posts.gate} gate` : null,
+    posts.terminal ? `${posts.terminal} terminal` : null,
+  ].filter(Boolean);
+
+  // Posts — one buy line with full dimensional spec
+  if (postBuyQty > 0) {
     lines.push({
-      id: "posts_line",
+      id: "posts_buy",
       category: "posts",
-      label: "Line posts",
-      quantity: posts.line,
+      label: `${postFace} fence posts`,
+      spec: postSpecLabel(s),
+      quantity: postBuyQty,
       unit: "ea",
-      highlightKeys: ["post:line"],
+      note: [
+        roleBits.length ? `Roles: ${roleBits.join(", ")}` : null,
+        `Hole ${formatSmallLength(s.holeDiameter, units)} dia × ${formatSmallLength(s.holeDepth, units)} deep`,
+        "Buy ground-contact rated (UC4A / CSA UC4.1)",
+      ]
+        .filter(Boolean)
+        .join(" · "),
+      highlightKeys: ["post:all"],
     });
-  if (posts.corner)
-    lines.push({
-      id: "posts_corner",
-      category: "posts",
-      label: "Corner posts",
-      quantity: posts.corner,
-      unit: "ea",
-      highlightKeys: ["post:corner"],
-    });
-  if (posts.end)
-    lines.push({
-      id: "posts_end",
-      category: "posts",
-      label: "End posts",
-      quantity: posts.end,
-      unit: "ea",
-      highlightKeys: ["post:end"],
-    });
-  if (posts.gate)
-    lines.push({
-      id: "posts_gate",
-      category: "posts",
-      label: "Gate posts",
-      quantity: posts.gate,
-      unit: "ea",
-      highlightKeys: ["post:gate"],
-    });
-  if (posts.terminal)
-    lines.push({
-      id: "posts_terminal",
-      category: "posts",
-      label: "Terminal posts",
-      quantity: posts.terminal,
-      unit: "ea",
-      highlightKeys: ["post:terminal"],
-    });
-  if (posts.structure)
+  }
+  if (posts.structure) {
     lines.push({
       id: "posts_structure",
       category: "posts",
-      label: "House/structure connections",
+      label: "House / structure connections",
+      spec: "Wall brackets or ledger (no full post)",
       quantity: posts.structure,
       unit: "ea",
       note: "May use brackets instead of full posts",
       highlightKeys: ["post:structure"],
     });
+  }
+  assumptions.push(
+    `Posts: ${postFace} x ${postLenFt} ft (height + hole depth, rounded to stock)`,
+  );
 
   let panels = undefined;
   let pickets = undefined;
@@ -129,97 +136,163 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
   let fabricRolls = undefined;
   let fabricLength = undefined;
   let topRailSections = undefined;
+  let wood: WoodPrivacyResult | undefined;
 
   if (project.fenceType === "panel") {
     panels = calculatePanels(project);
     const mod = moduleWidth(project);
     assumptions.push(
-      `Panel module: ${formatLength(project.settings.panelWidth, units)} (${project.settings.moduleWidthMode === "includes_post" ? "includes post" : "panel only + post"}) → ${formatLength(mod, units)} on center`,
+      `Panel module: ${formatLength(s.panelWidth, units)} (${s.moduleWidthMode === "includes_post" ? "includes post" : "panel only + post"}) → ${formatLength(mod, units)} on center`,
     );
     lines.push({
-      id: "panels_full",
+      id: "panels_buy",
       category: "panels",
-      label: "Full panels",
-      quantity: panels.fullPanels,
+      label: "Wood fence panels",
+      spec: panelSpecLabel(s, units),
+      quantity: panels.totalPanelsToBuy,
       unit: "ea",
+      note:
+        panels.cutPanels.length > 0
+          ? `${panels.fullPanels} full + ${panels.cutPanels.length} cut-to-fit`
+          : `${panels.fullPanels} full panels`,
       highlightKeys: ["panel:full"],
     });
     for (const cut of panels.cutPanels) {
       lines.push({
         id: `panels_cut_${cut.runId}_${Math.round(cut.length)}`,
         category: "panels",
-        label: `Cut panel (${formatSmallLength(cut.length, units)})`,
+        label: "Cut panel (from stock panel)",
+        spec: `Trim to ${formatSmallLength(cut.length, units)} wide`,
         quantity: 1,
         unit: "ea",
-        note: "Purchase one panel and cut to fit",
+        note: "Included in panels to purchase above",
         highlightKeys: [`run:${cut.runId}`, "panel:cut"],
       });
     }
-    lines.push({
-      id: "panels_buy",
-      category: "panels",
-      label: "Panels to purchase",
-      quantity: panels.totalPanelsToBuy,
-      unit: "ea",
-    });
   }
 
   if (project.fenceType === "wood_privacy") {
-    const wood = calculateWoodPrivacy(project);
+    wood = calculateWoodPrivacy(project);
     pickets = wood.pickets;
     rails = wood.rails;
+    const boardLenFt = boardStockFeet(s);
     assumptions.push(
-      `Post spacing: ${formatLength(project.settings.postSpacing, units)}`,
+      `Post spacing: ${formatLength(s.postSpacing, units)} on center`,
     );
-    assumptions.push(`Rails per span: ${project.settings.railsPerSpan}`);
-    assumptions.push(
-      `Picket: ${formatSmallLength(project.settings.picketWidth, units)} wide, ${formatSmallLength(project.settings.picketGap, units)} gap`,
-    );
-    lines.push({
-      id: "rails",
-      category: "rails",
-      label: "Rails",
-      quantity: wood.rails,
-      unit: "ea",
-      highlightKeys: ["rails"],
-    });
-    lines.push({
-      id: "pickets",
-      category: "pickets",
-      label: "Pickets / boards",
-      quantity: wood.pickets,
-      unit: "ea",
-      highlightKeys: ["pickets"],
-    });
+    assumptions.push(`Rails per span: ${s.railsPerSpan}`);
+    if (s.boardPattern === "wire_mesh") {
+      assumptions.push("Wood frame with welded-wire mesh infill");
+    } else {
+      assumptions.push(
+        `Boards: ${boardNominal(s.picketWidth)} / ${formatSmallLength(s.picketWidth, units)} face, ${formatSmallLength(s.picketGap, units)} gaps (including to posts)`,
+      );
+    }
+
+    if (wood.rails > 0) {
+      lines.push({
+        id: "rails",
+        category: "rails",
+        label: "Backer rails / stringers",
+        spec: railSpecLabel(),
+        quantity: wood.rails,
+        unit: "ea",
+        note: `${s.railsPerSpan} rails per bay · pressure-treated or cedar`,
+        highlightKeys: ["rails"],
+      });
+    }
+
+    if (wood.wirePanels > 0) {
+      const bayW = formatLength(
+        Math.max(0, s.postSpacing - s.postWidth),
+        units,
+      );
+      const bayH = formatLength(s.fenceHeight, units);
+      lines.push({
+        id: "wire_panels",
+        category: "panels",
+        label: "Welded-wire / hog-wire panels",
+        spec: `About ${bayH} H × ${bayW} W per bay`,
+        quantity: wood.wirePanels,
+        unit: "panels",
+        note: "Confirm gauge and grid opening at the store",
+        highlightKeys: ["pickets"],
+      });
+    } else if (wood.pickets > 0) {
+      const patternNote =
+        s.boardPattern === "board_on_board"
+          ? "Board-on-board (base + cover courses)"
+          : s.boardPattern === "shadowbox"
+            ? "Shadowbox / good-neighbor"
+            : s.boardPattern === "board_and_batten"
+              ? "Board-and-batten base course"
+              : s.boardPattern === "spaced"
+                ? "Spaced pickets"
+                : "Side-by-side solid";
+      lines.push({
+        id: "pickets",
+        category: "pickets",
+        label:
+          s.boardPattern === "board_and_batten"
+            ? "Base fence boards"
+            : "Fence boards / pickets",
+        spec: `${boardNominal(s.picketWidth)} x ${boardLenFt} ft · ${boardFaceLabel(s.picketWidth, units)}`,
+        quantity: wood.pickets,
+        unit: "ea",
+        note: [
+          patternNote,
+          boardTopLabel(s.boardTop),
+          wood.cutBoards > 0
+            ? `${wood.cutBoards} ripped narrower to keep bay gaps even`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        highlightKeys: ["pickets"],
+      });
+    }
+    if (wood.battens > 0) {
+      lines.push({
+        id: "battens",
+        category: "pickets",
+        label: "Battens",
+        spec: battenSpecLabel(boardLenFt),
+        quantity: wood.battens,
+        unit: "ea",
+        note: "Narrow strips covering board joints",
+        highlightKeys: ["pickets"],
+      });
+    }
   }
 
   if (project.fenceType === "chain_link") {
     const cl = calculateChainLink(project);
-    // Refine tension bar count from terminals
     cl.tensionBars = Math.max(2, posts.terminal);
-    cl.braceBands = cl.tensionBars * 2 + (project.settings.tensionWire ? project.runs.length : 0);
+    cl.braceBands =
+      cl.tensionBars * 2 + (s.tensionWire ? project.runs.length : 0);
     fabricRolls = cl.fabricRolls;
     fabricLength = cl.fabricLength;
     topRailSections = cl.topRailSections;
     assumptions.push(
-      `Fabric roll length: ${formatLength(project.settings.fabricRollLength, units)}`,
+      `Fabric roll length: ${formatLength(s.fabricRollLength, units)}`,
     );
     assumptions.push(
-      `Top rail section: ${formatLength(project.settings.topRailSectionLength, units)}`,
+      `Top rail section: ${formatLength(s.topRailSectionLength, units)}`,
     );
     lines.push({
       id: "fabric",
       category: "fabric",
-      label: "Fabric rolls",
+      label: "Chain-link fabric",
+      spec: `${formatLength(s.fenceHeight, units)} tall · ${formatLength(s.fabricRollLength, units)} rolls`,
       quantity: cl.fabricRolls,
       unit: "rolls",
-      note: `${formatLength(cl.fabricLength, units)} total fabric`,
+      note: `${formatLength(cl.fabricLength, units)} total fabric needed`,
       highlightKeys: ["fabric"],
     });
     lines.push({
       id: "top_rail",
       category: "rails",
       label: "Top rail sections",
+      spec: `${formatLength(s.topRailSectionLength, units)} sections`,
       quantity: cl.topRailSections,
       unit: "ea",
       highlightKeys: ["rails"],
@@ -251,9 +324,10 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
     id: "concrete",
     category: "concrete",
     label: "Concrete bags",
+    spec: `${formatSmallLength(s.holeDiameter, units)} × ${formatSmallLength(s.holeDepth, units)} holes`,
     quantity: concrete.bags,
     unit: "bags",
-    note: `${concretedPosts} posts concreted; bag yield ${inchesToFeet(Math.cbrt(project.settings.concreteBagYield)).toFixed(2)} ft³ equiv.`,
+    note: `${concretedPosts} posts · confirm bag yield on the product`,
     highlightKeys: ["post:all"],
   });
 
@@ -261,7 +335,7 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
     lines.push({
       id: "hinges",
       category: "gates",
-      label: "Hinge sets",
+      label: "Gate hinge sets",
       quantity: gateHw.hingeSets,
       unit: "sets",
       highlightKeys: project.gates.map((g) => `gate:${g.id}`),
@@ -269,7 +343,7 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
     lines.push({
       id: "latches",
       category: "gates",
-      label: "Latch sets",
+      label: "Gate latch sets",
       quantity: gateHw.latchSets,
       unit: "sets",
       highlightKeys: project.gates.map((g) => `gate:${g.id}`),
@@ -285,21 +359,102 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
     }
   }
 
-  const fastenersNote =
-    project.fenceType === "wood_privacy"
-      ? "Allow screws/nails for rails and pickets; verify package counts at purchase."
-      : project.fenceType === "panel"
-        ? "Allow brackets or fasteners per manufacturer panel system."
-        : "Include tension bands, nuts, and washers per terminal post.";
+  // Style accessories with dimensional specs
+  if (project.fenceType !== "chain_link") {
+    if (s.postCap !== "none" && posts.total > 0) {
+      lines.push({
+        id: "post_caps",
+        category: "optional",
+        label:
+          s.postCap === "solar"
+            ? "Solar / light post caps"
+            : s.postCap === "pyramid"
+              ? "Pyramid post caps"
+              : "Flat post caps",
+        spec: `Sized for ${postFace} posts`,
+        quantity: posts.total,
+        unit: "ea",
+        note: "Match actual post face at the store",
+      });
+    }
+    if (s.hasPictureFrame && project.runs.length > 0) {
+      const bays = Math.max(
+        1,
+        Math.ceil(totalFillLength(project) / s.postSpacing),
+      );
+      lines.push({
+        id: "picture_frame",
+        category: "optional",
+        label: "Picture-frame trim",
+        spec: trimSpecLabel(),
+        quantity: bays * 4,
+        unit: "ea",
+        note: "Top, bottom, and two sides per bay",
+      });
+    } else if (s.hasCapRail && project.runs.length > 0) {
+      const capQty = Math.max(
+        1,
+        Math.ceil(totalFenceLength / feetToInches(8)),
+      );
+      lines.push({
+        id: "cap_rail",
+        category: "optional",
+        label: "Cap rail",
+        spec: capRailSpecLabel(),
+        quantity: capQty,
+        unit: "ea",
+        note: "Laid flat across the top of each bay",
+      });
+      if (s.hasTrim) {
+        lines.push({
+          id: "cap_trim",
+          category: "optional",
+          label: "Fascia / trim under cap",
+          spec: trimSpecLabel(),
+          quantity: capQty,
+          unit: "ea",
+        });
+      }
+    }
+    if (s.hasKickboard && project.runs.length > 0) {
+      lines.push({
+        id: "kickboard",
+        category: "optional",
+        label: "Kickboards (rot boards)",
+        spec: kickboardSpecLabel(),
+        quantity: Math.max(
+          1,
+          Math.ceil(totalFillLength(project) / feetToInches(8)),
+        ),
+        unit: "ea",
+        note: "Ground-contact board at the bottom of each bay",
+      });
+    }
+    if (s.latticeTop !== "none") {
+      lines.push({
+        id: "lattice",
+        category: "optional",
+        label: "Lattice topper",
+        spec: latticeSpecLabel(s, units),
+        quantity: Math.max(
+          1,
+          Math.ceil(totalFillLength(project) / feetToInches(8)),
+        ),
+        unit: "panels",
+        note: "Cut strips from 4×8 sheets; add 1x2/2x2 retainers as needed",
+      });
+    }
+  }
 
-  lines.push({
-    id: "fasteners",
-    category: "fasteners",
-    label: "Fasteners / brackets",
-    quantity: 1,
-    unit: "allowance",
-    note: fastenersNote,
-  });
+  const fasteners = calculateFasteners(
+    project,
+    wood,
+    panels?.totalPanelsToBuy ?? 0,
+  );
+  lines.push(...fasteners.lines);
+  assumptions.push(
+    "Fasteners are approximate (package-rounded); confirm for treated lumber and local code",
+  );
 
   return {
     posts,
@@ -313,7 +468,7 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
     hingeSets: gateHw.hingeSets,
     latchSets: gateHw.latchSets,
     dropRods: gateHw.dropRods,
-    fastenersNote,
+    fastenersNote: fasteners.note,
     lines,
     assumptions,
     totalFenceLength,
@@ -407,15 +562,11 @@ export function calculateQuickEstimate(input: {
       totalLength - gates.reduce((s, g) => s + g.width, 0),
     ),
     lines: result.lines.map((lineItem) => {
-      if (lineItem.id === "posts_total")
-        return { ...lineItem, quantity: posts.total };
-      if (lineItem.id === "posts_line") return { ...lineItem, quantity: posts.line };
-      if (lineItem.id === "posts_corner")
-        return { ...lineItem, quantity: posts.corner };
-      if (lineItem.id === "posts_end") return { ...lineItem, quantity: posts.end };
-      if (lineItem.id === "posts_gate") return { ...lineItem, quantity: posts.gate };
-      if (lineItem.id === "posts_terminal")
-        return { ...lineItem, quantity: posts.terminal };
+      if (lineItem.id === "posts_buy")
+        return {
+          ...lineItem,
+          quantity: Math.max(0, posts.total - posts.structure),
+        };
       if (lineItem.id === "concrete")
         return { ...lineItem, quantity: concrete.bags };
       return lineItem;

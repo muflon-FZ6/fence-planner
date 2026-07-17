@@ -8,6 +8,7 @@ type AnalyticsEvent =
   | "calculate_materials"
   | "view_warning"
   | "print_project"
+  | "print_shopping_list"
   | "copy_material_list"
   | "open_guide"
   | "switch_units"

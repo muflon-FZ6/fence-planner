@@ -1,4 +1,5 @@
-import type { FenceProject } from "@/domain/types";
+import { defaultSettings } from "@/domain/defaults";
+import type { FenceProject, FenceSettings } from "@/domain/types";
 
 const CURRENT_KEY = "fence-planner:current";
 const PROJECTS_KEY = "fence-planner:projects";
@@ -9,12 +10,48 @@ export type UserPrefs = {
   lastFenceType: FenceProject["fenceType"];
 };
 
+function normalizeProject(project: FenceProject): FenceProject {
+  const base = defaultSettings(project.fenceType);
+  const prev = project.settings ?? ({} as FenceSettings);
+  const settings: FenceSettings = {
+    ...base,
+    ...prev,
+    boardPattern:
+      prev.boardPattern ??
+      ((prev.picketGap ?? 0) > 0.5 ? "spaced" : "solid"),
+    boardTop: prev.boardTop ?? base.boardTop,
+    hasCapRail: prev.hasCapRail ?? base.hasCapRail,
+    hasTrim: prev.hasTrim ?? base.hasTrim,
+    hasPictureFrame: prev.hasPictureFrame ?? base.hasPictureFrame,
+    hasKickboard: prev.hasKickboard ?? base.hasKickboard,
+    latticeTop: prev.latticeTop ?? base.latticeTop,
+    latticeHeight: resolveLatticeHeight(prev, base),
+    postCap: prev.postCap ?? base.postCap,
+  };
+  return { ...project, settings };
+}
+
+function resolveLatticeHeight(
+  prev: FenceSettings,
+  base: FenceSettings,
+): number {
+  if (typeof prev.latticeHeight === "number" && prev.latticeHeight > 0) {
+    return prev.latticeHeight;
+  }
+  // Migrate older ratio-based saves into inches.
+  if (typeof prev.latticeHeightRatio === "number" && prev.latticeHeightRatio > 0) {
+    const fenceH = prev.fenceHeight ?? base.fenceHeight;
+    return Math.round(prev.latticeHeightRatio * fenceH);
+  }
+  return base.latticeHeight;
+}
+
 export function loadCurrentProject(): FenceProject | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(CURRENT_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as FenceProject;
+    return normalizeProject(JSON.parse(raw) as FenceProject);
   } catch {
     return null;
   }

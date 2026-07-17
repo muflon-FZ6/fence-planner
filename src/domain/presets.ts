@@ -1,7 +1,20 @@
-import { createEmptyProject, cryptoRandomId } from "./defaults";
+import {
+  createEmptyProject,
+  cryptoRandomId,
+  defaultScene,
+  defaultSettings,
+  intentDefaults,
+} from "./defaults";
 import { rebuildJoints, syncRunLengths } from "./geometry";
 import { feetToInches } from "./units";
-import type { FenceProject, FenceRun, FenceType, ProjectIntent } from "./types";
+import type {
+  FenceProject,
+  FenceRun,
+  FenceType,
+  Gate,
+  ProjectIntent,
+  SceneContext,
+} from "./types";
 
 function run(
   x1: number,
@@ -79,6 +92,109 @@ export function projectFromYardShape(
   });
   project.joints = rebuildJoints(project);
   return project;
+}
+
+/** Map a planning intent to a ready-to-edit backyard scenario template. */
+export function projectFromIntent(
+  intent: ProjectIntent,
+  options?: {
+    unitSystem?: FenceProject["unitSystem"];
+    name?: string;
+  },
+): FenceProject {
+  const shapeForIntent: Record<Exclude<ProjectIntent, "calculate">, YardShape> =
+    {
+      privacy: "u_shape",
+      pets: "rectangle",
+      replace: "l_shape",
+      boundary: "straight",
+      gate_area: "u_shape",
+      pool_garden: "rectangle",
+      modern: "u_shape",
+    };
+
+  const shape =
+    intent === "calculate" ? "straight" : shapeForIntent[intent];
+  const defaults = intentDefaults(intent);
+  const fenceType = defaults.fenceType ?? "panel";
+
+  const project = projectFromYardShape(shape, {
+    fenceType,
+    intent,
+    unitSystem: options?.unitSystem ?? "imperial",
+    name: options?.name ?? defaultNameForIntent(intent),
+  });
+
+  project.settings = {
+    ...defaultSettings(fenceType),
+    ...defaults.settings,
+  };
+  project.stylePresetId = "custom";
+  project.scene = sceneForIntent(intent);
+
+  if (intent === "pets" || intent === "gate_area" || intent === "pool_garden") {
+    const hostRun =
+      project.runs.find((r) => r.length === Math.max(...project.runs.map((x) => x.length))) ??
+      project.runs[0];
+    if (hostRun) {
+      const gate: Gate = {
+        id: cryptoRandomId(),
+        runId: hostRun.id,
+        offsetFromRunStart: Math.max(feetToInches(8), hostRun.length * 0.35),
+        width: feetToInches(intent === "gate_area" ? 10 : 4),
+        gateType: intent === "gate_area" ? "double" : "single",
+        swingDirection: "out",
+      };
+      project.gates = [gate];
+      hostRun.gateIds = [gate.id];
+    }
+  }
+
+  project.joints = rebuildJoints(project);
+  return project;
+}
+
+function defaultNameForIntent(intent: ProjectIntent): string {
+  switch (intent) {
+    case "privacy":
+      return "Backyard privacy fence";
+    case "pets":
+      return "Pet-safe yard fence";
+    case "replace":
+      return "Fence replacement";
+    case "boundary":
+      return "Property boundary fence";
+    case "gate_area":
+      return "Yard with gate";
+    case "pool_garden":
+      return "Pool & garden enclosure";
+    case "modern":
+      return "Modern outdoor fence";
+    case "calculate":
+      return "Material estimate";
+  }
+}
+
+function sceneForIntent(intent: ProjectIntent): SceneContext {
+  const base = defaultScene();
+  switch (intent) {
+    case "privacy":
+      return { ...base, housePosition: "center", ground: "grass", daylight: "evening" };
+    case "pets":
+      return { ...base, housePosition: "center", showSilhouette: true, ground: "grass" };
+    case "replace":
+      return { ...base, housePosition: "left", daylight: "midday" };
+    case "boundary":
+      return { ...base, housePosition: "none", ground: "mixed", yardSize: "wide" };
+    case "gate_area":
+      return { ...base, housePosition: "center", ground: "grass" };
+    case "pool_garden":
+      return { ...base, housePosition: "right", ground: "patio", daylight: "morning" };
+    case "modern":
+      return { ...base, housePosition: "center", houseTone: "dark", ground: "patio" };
+    default:
+      return base;
+  }
 }
 
 export function quickEstimateToProject(input: {

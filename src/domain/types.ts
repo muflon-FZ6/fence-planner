@@ -81,8 +81,62 @@ export type FenceSettings = {
   tensionWire: boolean;
   tiesPerFoot: number;
   finish: FenceFinish;
+  /** Placeholder for future wood-texture chips (same id space as finish for now). */
+  finishTexture?: string;
   boardOrientation: "vertical" | "horizontal";
+  /**
+   * How boards join in the bay (NA wood-fence patterns, store-bought lumber).
+   * solid = side-by-side privacy (one face)
+   * spaced = deliberate gaps
+   * shadowbox = alternating faces (good neighbor)
+   * board_on_board = base + cover boards on the same face
+   * board_and_batten = wide base boards + narrow joint battens
+   * wire_mesh = wood post-and-rail frame with welded-wire infill
+   */
+  boardPattern:
+    | "solid"
+    | "spaced"
+    | "shadowbox"
+    | "board_on_board"
+    | "board_and_batten"
+    | "wire_mesh";
+  /** Top profile of each board/picket. */
+  boardTop: "flat" | "dog_ear" | "pointed";
+  /** Horizontal cap board across the top of the bay. */
+  hasCapRail: boolean;
+  /** Vertical trim under the cap (cap-and-trim look). */
+  hasTrim: boolean;
+  /** Full perimeter trim around each bay (picture-frame look). */
+  hasPictureFrame: boolean;
+  /** Replaceable ground-contact board at the bottom of the bay. */
+  hasKickboard: boolean;
+  /** Decorative lattice section on top of the solid fence. */
+  latticeTop: "none" | "open" | "dense" | "privacy";
+  /** Lattice topper height in inches (commonly 12–24). */
+  latticeHeight: number;
+  /**
+   * @deprecated Prefer latticeHeight. Kept for older saved projects during migrate.
+   */
+  latticeHeightRatio?: number;
+  /** Decorative / functional post top. */
+  postCap: "none" | "flat" | "pyramid" | "solar";
 };
+
+/** Named starter looks for the style builder. */
+export type ConstructionStyleId =
+  | "panel_privacy"
+  | "board_to_board"
+  | "board_on_board"
+  | "shadowbox"
+  | "stockade"
+  | "board_and_batten"
+  | "horizontal_modern"
+  | "horizontal_spaced"
+  | "lattice_top"
+  | "cap_and_trim"
+  | "picket_spaced"
+  | "wood_wire"
+  | "chain_link";
 
 export type FenceFinish =
   | "natural_cedar"
@@ -119,6 +173,8 @@ export type FenceProject = {
   unitSystem: UnitSystem;
   fenceType: FenceType;
   intent?: ProjectIntent;
+  /** Last starter look applied; "custom" once the user tweaks style options. */
+  stylePresetId?: ConstructionStyleId | "custom";
   runs: FenceRun[];
   gates: Gate[];
   joints: Joint[];
@@ -142,7 +198,13 @@ export type MaterialLine = {
     | "fasteners"
     | "waste"
     | "optional";
+  /** Human item name, e.g. "Fence boards". */
   label: string;
+  /**
+   * Store-ready size / SKU wording, e.g. "1x6 x 6 ft (about 5.5 in face)".
+   * Shown prominently on the shopping list.
+   */
+  spec?: string;
   quantity: number;
   unit: string;
   note?: string;

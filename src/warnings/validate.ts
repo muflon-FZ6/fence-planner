@@ -1,19 +1,21 @@
 import { fillSegments, moduleWidth } from "@/domain/geometry";
-import { formatSmallLength } from "@/domain/units";
+import { formatLength } from "@/domain/units";
 import type { FenceProject, ProjectWarning } from "@/domain/types";
 
 const SHORT_SECTION_IN = 24;
 const GATE_NEAR_CORNER_IN = 12;
 
+/**
+ * Keep tips plain-language and few in number — this is an illustrative planner.
+ */
 export function validateProject(project: FenceProject): ProjectWarning[] {
   const warnings: ProjectWarning[] = [];
-  const units = project.unitSystem;
 
   if (project.runs.length === 0) {
     warnings.push({
       id: "no_runs",
       severity: "info",
-      message: "Add a fence run or choose a yard shape to begin.",
+      message: "Draw a fence line or pick a yard starter to begin.",
     });
     return warnings;
   }
@@ -23,45 +25,10 @@ export function validateProject(project: FenceProject): ProjectWarning[] {
       warnings.push({
         id: `zero_${run.id}`,
         severity: "error",
-        message: "A fence run has zero or negative length.",
+        message: "One fence line has no length. Delete it or stretch it out.",
         runId: run.id,
+        actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
       });
-    }
-
-    if (project.fenceType === "panel") {
-      const mod = moduleWidth(project);
-      for (const seg of fillSegments(project, run)) {
-        if (seg.length <= 0 || mod <= 0) continue;
-        const remainder = seg.length % mod;
-        if (remainder > 0.5 && remainder < SHORT_SECTION_IN) {
-          warnings.push({
-            id: `short_${run.id}_${Math.round(seg.startOffset)}`,
-            severity: "warning",
-            message: `Final section is only ${formatSmallLength(remainder, units)} — very short cut panel.`,
-            runId: run.id,
-            actions: [
-              { id: "accept", label: "Allow cut panel", kind: "accept_cut" },
-              {
-                id: "width",
-                label: "Adjust panel width",
-                kind: "change_panel_width",
-              },
-              { id: "dismiss", label: "Dismiss", kind: "dismiss" },
-            ],
-          });
-        } else if (remainder > 0.5) {
-          warnings.push({
-            id: `uneven_${run.id}_${Math.round(seg.startOffset)}`,
-            severity: "info",
-            message: `Uneven final section of ${formatSmallLength(remainder, units)} — one cut panel required.`,
-            runId: run.id,
-            actions: [
-              { id: "accept", label: "Allow cut panel", kind: "accept_cut" },
-              { id: "dismiss", label: "Dismiss", kind: "dismiss" },
-            ],
-          });
-        }
-      }
     }
 
     for (const gate of project.gates.filter((g) => g.runId === run.id)) {
@@ -69,37 +36,64 @@ export function validateProject(project: FenceProject): ProjectWarning[] {
         warnings.push({
           id: `gate_wide_${gate.id}`,
           severity: "error",
-          message: "Gate is wider than the fence run.",
+          message: "A gate is wider than the fence line it sits on. Make the gate smaller or the line longer.",
           runId: run.id,
           gateId: gate.id,
-          actions: [{ id: "move", label: "Adjust gate", kind: "move_gate" }],
+          actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
         });
-      }
-      if (
+      } else if (
         gate.offsetFromRunStart < GATE_NEAR_CORNER_IN ||
         gate.offsetFromRunStart + gate.width > run.length - GATE_NEAR_CORNER_IN
       ) {
         warnings.push({
           id: `gate_corner_${gate.id}`,
-          severity: "warning",
-          message: "Gate is very close to a corner or end — check post clearance.",
+          severity: "info",
+          message:
+            "A gate is right next to a corner. That can work — just leave a little room when you build.",
           runId: run.id,
           gateId: gate.id,
-          actions: [
-            { id: "move", label: "Move gate", kind: "move_gate" },
-            { id: "dismiss", label: "Dismiss", kind: "dismiss" },
-          ],
+          actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
         });
       }
     }
   }
 
-  if (project.settings.holeDepth < 24) {
+  if (project.fenceType === "panel") {
+    const mod = moduleWidth(project);
+    let leftoverCount = 0;
+    let shortCount = 0;
+
+    for (const run of project.runs) {
+      for (const seg of fillSegments(project, run)) {
+        if (seg.length <= 0 || mod <= 0) continue;
+        const remainder = seg.length % mod;
+        if (remainder <= 0.5) continue;
+        leftoverCount += 1;
+        if (remainder < SHORT_SECTION_IN) shortCount += 1;
+      }
+    }
+
+    if (leftoverCount > 0) {
+      const panelSize = formatLength(project.settings.panelWidth, project.unitSystem);
+      warnings.push({
+        id: "panel_leftovers",
+        severity: shortCount > 0 ? "warning" : "info",
+        message:
+          shortCount > 0
+            ? `Your yard isn’t an exact multiple of ${panelSize} panels, so a few short leftover pieces will need cutting. That’s common — the shopping list already counts those panels.`
+            : `Your fence won’t land on exact full panels (standard size about ${panelSize}). You’ll trim the last panel on some sides. The shopping list already includes that.`,
+        actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
+      });
+    }
+  }
+
+  if (project.settings.holeDepth > 0 && project.settings.holeDepth < 24) {
     warnings.push({
       id: "shallow_hole",
-      severity: "warning",
+      severity: "info",
       message:
-        "Post-hole depth is under 24 in — verify local frost depth and soil conditions.",
+        "Post holes look shallow in the settings. Check what your area usually needs before you dig.",
+      actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
     });
   }
 
@@ -107,27 +101,8 @@ export function validateProject(project: FenceProject): ProjectWarning[] {
     warnings.push({
       id: "invalid_hole",
       severity: "error",
-      message: "Post-hole diameter and depth must be greater than zero.",
-    });
-  }
-
-  const spacing =
-    project.fenceType === "panel"
-      ? moduleWidth(project)
-      : project.settings.postSpacing;
-  if (spacing > 120) {
-    warnings.push({
-      id: "wide_spacing",
-      severity: "warning",
-      message: "Post spacing is unusually wide — confirm your fence system supports it.",
-    });
-  }
-
-  if (project.settings.wastePercent > 20) {
-    warnings.push({
-      id: "high_waste",
-      severity: "info",
-      message: "Waste allowance is high — layout may be driving extra material.",
+      message: "Post-hole size in settings needs a real number greater than zero.",
+      actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
     });
   }
 

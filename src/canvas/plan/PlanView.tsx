@@ -1,136 +1,367 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { classifyPosts, moduleWidth, pointAlongRun } from "@/domain/geometry";
+import {
+  planGridInches,
+  snapPointToGrid,
+  snapSegment,
+  snapToNearbyPoint,
+} from "@/domain/snap";
 import { formatLength } from "@/domain/units";
+import type { Point } from "@/domain/types";
 import { useProject } from "@/state/projectStore";
 
 type DrawMode = "idle" | "drawing";
-
-function snapPoint(
-  from: { x: number; y: number } | null,
-  to: { x: number; y: number },
-  snapAngles = true,
-): { x: number; y: number } {
-  if (!from || !snapAngles) return to;
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const dist = Math.hypot(dx, dy);
-  if (dist < 1) return to;
-  const angle = Math.atan2(dy, dx);
-  const step = Math.PI / 4;
-  const snapped = Math.round(angle / step) * step;
-  return {
-    x: from.x + Math.cos(snapped) * dist,
-    y: from.y + Math.sin(snapped) * dist,
-  };
-}
 
 export function PlanView() {
   const {
     project,
     selectedRunId,
+    selectedGateId,
     highlightKeys,
     selectRun,
     selectGate,
     addRun,
     updateRun,
+    deleteRun,
+    deleteGate,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useProject();
   const svgRef = useRef<SVGSVGElement>(null);
   const [mode, setMode] = useState<DrawMode>("idle");
-  const [draftStart, setDraftStart] = useState<{ x: number; y: number } | null>(
-    null,
+  const [draftStart, setDraftStart] = useState<Point | null>(null);
+  const [cursor, setCursor] = useState<Point | null>(null);
+  const [snapEnabled, setSnapEnabled] = useState(true);
+
+  const grid = planGridInches(project.unitSystem);
+  const minDrawLength = snapEnabled ? grid : grid * 0.25;
+  const existingEnds = useMemo(
+    () => project.runs.flatMap((r) => [r.start, r.end]),
+    [project.runs],
   );
-  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.key === "Escape" && mode === "drawing") {
+        setMode("idle");
+        setDraftStart(null);
+        setCursor(null);
+        return;
+      }
+
+      if (e.key.toLowerCase() === "s" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setSnapEnabled((on) => !on);
+        return;
+      }
+
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
+        return;
+      }
+      if (mod && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
+        return;
+      }
+
+      if (e.key === "Backspace" || e.key === "Delete") {
+        if (selectedGateId) {
+          e.preventDefault();
+          deleteGate(selectedGateId);
+          return;
+        }
+        if (selectedRunId) {
+          e.preventDefault();
+          deleteRun(selectedRunId);
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [
+    mode,
+    selectedRunId,
+    selectedGateId,
+    deleteRun,
+    deleteGate,
+    undo,
+    redo,
+  ]);
 
   const bounds = useMemo(() => {
     const pts = project.runs.flatMap((r) => [r.start, r.end]);
-    if (!pts.length) return { minX: -50, minY: -50, maxX: 600, maxY: 400 };
+    if (!pts.length) {
+      // Empty plan: show a ~60 ft × 40 ft planning pad
+      return { minX: -grid * 2, minY: -grid * 2, maxX: grid * 52, maxY: grid * 36 };
+    }
     const xs = pts.map((p) => p.x);
     const ys = pts.map((p) => p.y);
-    const pad = 80;
+    const pad = grid * 6;
     return {
       minX: Math.min(...xs) - pad,
       minY: Math.min(...ys) - pad,
       maxX: Math.max(...xs) + pad,
       maxY: Math.max(...ys) + pad,
     };
-  }, [project.runs]);
+  }, [project.runs, grid]);
 
-  const width = Math.max(400, bounds.maxX - bounds.minX);
-  const height = Math.max(300, bounds.maxY - bounds.minY);
+  const width = Math.max(grid * 20, bounds.maxX - bounds.minX);
+  const height = Math.max(grid * 14, bounds.maxY - bounds.minY);
   const posts = useMemo(() => classifyPosts(project), [project]);
   const mod = moduleWidth(project);
 
-  function clientToWorld(e: React.PointerEvent): { x: number; y: number } {
+  function clientToWorld(e: { clientX: number; clientY: number }): Point {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
     const rect = svg.getBoundingClientRect();
-    const x =
-      ((e.clientX - rect.left) / rect.width) * width + bounds.minX;
-    const y =
-      ((e.clientY - rect.top) / rect.height) * height + bounds.minY;
-    return { x, y };
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * width + bounds.minX,
+      y: ((e.clientY - rect.top) / rect.height) * height + bounds.minY,
+    };
+  }
+
+  function refinePoint(raw: Point, exclude?: Point): Point {
+    if (!snapEnabled) return raw;
+    const onGrid = snapPointToGrid(raw, grid);
+    const candidates = exclude
+      ? existingEnds.filter(
+          (p) => !(Math.abs(p.x - exclude.x) < 0.1 && Math.abs(p.y - exclude.y) < 0.1),
+        )
+      : existingEnds;
+    return snapToNearbyPoint(onGrid, candidates, grid * 1.25);
+  }
+
+  function placeSegmentEnd(start: Point, rawEnd: Point): { end: Point; length: number } {
+    const refined = refinePoint(rawEnd, start);
+    if (!snapEnabled) {
+      const length = Math.hypot(refined.x - start.x, refined.y - start.y);
+      return { end: refined, length };
+    }
+    return snapSegment(start, refined, grid);
+  }
+
+  function cancelDrawing() {
+    setMode("idle");
+    setDraftStart(null);
+    setCursor(null);
   }
 
   function onPointerDown(e: React.PointerEvent) {
     if ((e.target as Element).closest("[data-run],[data-gate],[data-handle]"))
       return;
-    const p = clientToWorld(e);
-    if (mode === "idle") {
-      setMode("drawing");
-      setDraftStart(p);
-      setCursor(p);
-    } else if (mode === "drawing" && draftStart) {
-      const end = snapPoint(draftStart, p);
-      if (Math.hypot(end.x - draftStart.x, end.y - draftStart.y) > 12) {
-        addRun(draftStart, end);
-      }
-      setMode("idle");
-      setDraftStart(null);
-      setCursor(null);
+    if (mode !== "drawing") return;
+
+    const raw = clientToWorld(e);
+    if (!draftStart) {
+      const start = refinePoint(raw);
+      setDraftStart(start);
+      setCursor(start);
+      return;
     }
+
+    const { end, length } = placeSegmentEnd(draftStart, raw);
+    if (length >= minDrawLength) {
+      addRun(draftStart, end);
+    }
+    cancelDrawing();
   }
 
   function onPointerMove(e: React.PointerEvent) {
     if (mode !== "drawing" || !draftStart) return;
-    setCursor(snapPoint(draftStart, clientToWorld(e)));
+    const { end } = placeSegmentEnd(draftStart, clientToWorld(e));
+    setCursor(end);
   }
 
   const draftEnd = cursor;
+  const draftLength =
+    draftStart && draftEnd
+      ? Math.hypot(draftEnd.x - draftStart.x, draftEnd.y - draftStart.y)
+      : 0;
+
+  const gridLabel =
+    project.unitSystem === "imperial" ? "1 ft grid" : "0.5 m grid";
+  const hint =
+    mode !== "drawing"
+      ? selectedRunId
+        ? "Line selected — Delete removes it, or Undo (⌘Z / Ctrl+Z) to reverse your last change."
+        : snapEnabled
+          ? `Snap on (${gridLabel}, 15°). Toggle Snap off for freehand. Press S to toggle.`
+          : "Snap off — freehand drawing. Toggle Snap on for grid and angle assist. Press S to toggle."
+      : !draftStart
+        ? snapEnabled
+          ? `Click to place the start (snaps to ${gridLabel}).`
+          : "Click to place the start (freehand)."
+        : `Click to place the end · ${formatLength(draftLength, project.unitSystem)} · Esc cancels`;
+
+  // Grid lines for the visible pad
+  const gridLines = useMemo(() => {
+    const lines: { x1: number; y1: number; x2: number; y2: number; major: boolean }[] = [];
+    const startX = Math.floor(bounds.minX / grid) * grid;
+    const startY = Math.floor(bounds.minY / grid) * grid;
+    for (let x = startX; x <= bounds.maxX; x += grid) {
+      const major = Math.round(x / grid) % 5 === 0;
+      lines.push({
+        x1: x,
+        y1: bounds.minY,
+        x2: x,
+        y2: bounds.maxY,
+        major,
+      });
+    }
+    for (let y = startY; y <= bounds.maxY; y += grid) {
+      const major = Math.round(y / grid) % 5 === 0;
+      lines.push({
+        x1: bounds.minX,
+        y1: y,
+        x2: bounds.maxX,
+        y2: y,
+        major,
+      });
+    }
+    return lines;
+  }, [bounds, grid]);
 
   return (
-    <div className="flex h-full min-h-[320px] flex-col rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)]">
-      <div className="flex items-center justify-between border-b border-border px-3 py-2 text-sm">
+    <div className="flex h-[min(58vh,560px)] min-h-[280px] flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)] lg:h-[min(70vh,720px)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2 text-sm">
         <span className="font-medium text-accent-teal">Plan View</span>
-        <div className="flex gap-2">
+        <div className="flex max-w-full flex-wrap items-center gap-2">
           <button
             type="button"
-            className={`rounded px-2 py-1 text-xs font-semibold ${
+            className={`rounded px-2.5 py-1 text-xs font-semibold ${
               mode === "drawing"
                 ? "bg-primary text-white"
                 : "bg-surface-muted text-foreground"
             }`}
+            aria-pressed={mode === "drawing"}
+            title="Draw a straight fence segment by clicking two points"
             onClick={() => {
-              setMode((m) => (m === "drawing" ? "idle" : "drawing"));
-              setDraftStart(null);
+              if (mode === "drawing") {
+                cancelDrawing();
+              } else {
+                setMode("drawing");
+                setDraftStart(null);
+                setCursor(null);
+              }
             }}
           >
-            {mode === "drawing" ? "Drawing…" : "Draw run"}
+            {mode === "drawing" ? "Cancel drawing" : "Add fence line"}
           </button>
-          <span className="text-xs text-foreground/55">Snap: 45°</span>
+          <button
+            type="button"
+            disabled={!canUndo}
+            onClick={undo}
+            className="rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
+            title="Undo (⌘Z / Ctrl+Z)"
+          >
+            Undo
+          </button>
+          <button
+            type="button"
+            disabled={!canRedo}
+            onClick={redo}
+            className="rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
+            title="Redo"
+          >
+            Redo
+          </button>
+          <button
+            type="button"
+            disabled={!selectedRunId && !selectedGateId}
+            onClick={() => {
+              if (selectedGateId) deleteGate(selectedGateId);
+              else if (selectedRunId) deleteRun(selectedRunId);
+            }}
+            className="rounded border border-danger/40 bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger disabled:opacity-40"
+            title="Delete selected line or gate (Delete / Backspace)"
+          >
+            Delete
+          </button>
+          <button
+            type="button"
+            aria-pressed={snapEnabled}
+            onClick={() => setSnapEnabled((on) => !on)}
+            className={`rounded px-2.5 py-1 text-xs font-semibold ${
+              snapEnabled
+                ? "bg-accent-teal/15 text-accent-teal ring-1 ring-accent-teal/40"
+                : "border border-border bg-surface text-foreground/70"
+            }`}
+            title={
+              snapEnabled
+                ? `Snap on: ${gridLabel} and 15° angles (press S)`
+                : "Snap off: freehand placement (press S)"
+            }
+          >
+            Snap {snapEnabled ? "on" : "off"}
+          </button>
+          <span className="text-xs text-foreground/55">
+            {snapEnabled ? `${gridLabel} · 15°` : "Freehand"}
+          </span>
         </div>
       </div>
-      <div className="relative flex-1 overflow-hidden bg-[linear-gradient(to_right,rgba(42,111,122,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(42,111,122,0.06)_1px,transparent_1px)] bg-size-[24px_24px]">
+      <p
+        className={`border-b border-border px-3 py-1.5 text-xs ${
+          mode === "drawing"
+            ? "bg-primary-soft text-primary"
+            : "bg-surface-muted/60 text-foreground/70"
+        }`}
+        role="status"
+      >
+        {hint}
+      </p>
+      <div
+        className={`relative flex-1 overflow-hidden ${
+          mode === "drawing" ? "cursor-crosshair" : ""
+        }`}
+      >
         <svg
           ref={svgRef}
           viewBox={`${bounds.minX} ${bounds.minY} ${width} ${height}`}
-          className="h-full w-full touch-none"
+          className="h-full w-full touch-none bg-[#f3f0e8]"
           role="img"
-          aria-label="Top-down fence plan"
+          aria-label="Top-down fence plan. Use Add fence line, then click start and end points."
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
         >
+          {gridLines.map((line, i) => (
+            <line
+              key={i}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke={
+                snapEnabled
+                  ? line.major
+                    ? "rgba(42,111,122,0.18)"
+                    : "rgba(42,111,122,0.08)"
+                  : line.major
+                    ? "rgba(42,111,122,0.08)"
+                    : "rgba(42,111,122,0.03)"
+              }
+              strokeWidth={line.major ? 2 : 1}
+            />
+          ))}
+
           {project.runs.map((run) => {
             const selected = selectedRunId === run.id;
             const highlighted =
@@ -144,8 +375,12 @@ export function PlanView() {
                   y1={run.start.y}
                   x2={run.end.x}
                   y2={run.end.y}
-                  stroke={selected || highlighted ? "var(--primary)" : "var(--accent-teal)"}
-                  strokeWidth={selected ? 10 : 7}
+                  stroke={
+                    selected || highlighted
+                      ? "var(--primary)"
+                      : "var(--accent-teal)"
+                  }
+                  strokeWidth={selected ? 14 : 10}
                   strokeLinecap="round"
                   className="cursor-pointer"
                   onClick={(e) => {
@@ -153,7 +388,6 @@ export function PlanView() {
                     selectRun(run.id);
                   }}
                 />
-                {/* Panel ticks */}
                 {project.fenceType === "panel" &&
                   mod > 0 &&
                   Array.from({
@@ -165,49 +399,46 @@ export function PlanView() {
                         key={i}
                         cx={p.x}
                         cy={p.y}
-                        r={3}
+                        r={4}
                         fill="var(--sand)"
-                        opacity={0.7}
+                        opacity={0.75}
                       />
                     );
                   })}
                 <text
                   x={(run.start.x + run.end.x) / 2}
-                  y={(run.start.y + run.end.y) / 2 - 12}
+                  y={(run.start.y + run.end.y) / 2 - 14}
                   textAnchor="middle"
-                  fontSize={14}
+                  fontSize={Math.max(14, grid * 0.7)}
                   fill="var(--foreground)"
                   className="pointer-events-none select-none"
+                  fontWeight={600}
                 >
                   {formatLength(run.length, project.unitSystem)}
                 </text>
-                {/* End handles */}
                 {[run.start, run.end].map((pt, idx) => (
                   <circle
                     key={idx}
                     data-handle
                     cx={pt.x}
                     cy={pt.y}
-                    r={8}
+                    r={Math.max(10, grid * 0.35)}
                     fill="var(--surface)"
                     stroke="var(--accent-teal)"
-                    strokeWidth={2}
+                    strokeWidth={3}
                     className="cursor-move"
                     onPointerDown={(e) => {
                       e.stopPropagation();
                       selectRun(run.id);
+                      const fixed = idx === 0 ? run.end : run.start;
                       const move = (ev: PointerEvent) => {
-                        const svg = svgRef.current;
-                        if (!svg) return;
-                        const rect = svg.getBoundingClientRect();
-                        const x =
-                          ((ev.clientX - rect.left) / rect.width) * width +
-                          bounds.minX;
-                        const y =
-                          ((ev.clientY - rect.top) / rect.height) * height +
-                          bounds.minY;
-                        if (idx === 0) updateRun(run.id, { start: { x, y } });
-                        else updateRun(run.id, { end: { x, y } });
+                        const { end } = placeSegmentEnd(fixed, clientToWorld(ev));
+                        // When dragging start, invert: fixed is end
+                        if (idx === 0) {
+                          updateRun(run.id, { start: end, end: fixed });
+                        } else {
+                          updateRun(run.id, { start: fixed, end });
+                        }
                       };
                       const up = () => {
                         window.removeEventListener("pointermove", move);
@@ -244,14 +475,14 @@ export function PlanView() {
                   x2={b.x}
                   y2={b.y}
                   stroke="var(--accent-amber)"
-                  strokeWidth={10}
-                  strokeDasharray="8 6"
+                  strokeWidth={12}
+                  strokeDasharray="10 8"
                 />
                 <text
                   x={(a.x + b.x) / 2}
-                  y={(a.y + b.y) / 2 + 18}
+                  y={(a.y + b.y) / 2 + 20}
                   textAnchor="middle"
-                  fontSize={12}
+                  fontSize={Math.max(12, grid * 0.55)}
                   fill="var(--accent-amber)"
                   fontWeight={700}
                 >
@@ -273,41 +504,58 @@ export function PlanView() {
               terminal: "var(--primary)",
               structure: "var(--foreground)",
             };
-            const shape =
-              post.type === "corner" || post.type === "terminal" ? (
+            const r = post.type === "gate" ? 8 : 6;
+            if (post.type === "corner" || post.type === "terminal") {
+              return (
                 <rect
-                  x={post.point.x - 6}
-                  y={post.point.y - 6}
-                  width={12}
-                  height={12}
+                  key={post.id}
+                  x={post.point.x - 7}
+                  y={post.point.y - 7}
+                  width={14}
+                  height={14}
                   fill={colors[post.type]}
                   stroke={hl ? "#000" : "none"}
                   strokeWidth={hl ? 2 : 0}
                   transform={`rotate(45 ${post.point.x} ${post.point.y})`}
                 />
-              ) : (
-                <circle
-                  cx={post.point.x}
-                  cy={post.point.y}
-                  r={post.type === "gate" ? 7 : 5}
-                  fill={colors[post.type] ?? "var(--accent-teal)"}
-                  stroke={hl ? "#000" : "var(--surface)"}
-                  strokeWidth={hl ? 2 : 1}
-                />
               );
-            return <g key={post.id}>{shape}</g>;
+            }
+            return (
+              <circle
+                key={post.id}
+                cx={post.point.x}
+                cy={post.point.y}
+                r={r}
+                fill={colors[post.type] ?? "var(--accent-teal)"}
+                stroke={hl ? "#000" : "var(--surface)"}
+                strokeWidth={hl ? 2 : 1}
+              />
+            );
           })}
 
-          {mode === "drawing" && draftStart && draftEnd && (
-            <line
-              x1={draftStart.x}
-              y1={draftStart.y}
-              x2={draftEnd.x}
-              y2={draftEnd.y}
-              stroke="var(--primary)"
-              strokeWidth={6}
-              strokeDasharray="10 8"
-            />
+          {mode === "drawing" && draftStart && draftEnd && draftLength >= grid && (
+            <g>
+              <line
+                x1={draftStart.x}
+                y1={draftStart.y}
+                x2={draftEnd.x}
+                y2={draftEnd.y}
+                stroke="var(--primary)"
+                strokeWidth={10}
+                strokeDasharray="14 10"
+                strokeLinecap="round"
+              />
+              <text
+                x={(draftStart.x + draftEnd.x) / 2}
+                y={(draftStart.y + draftEnd.y) / 2 - 16}
+                textAnchor="middle"
+                fontSize={Math.max(16, grid * 0.75)}
+                fill="var(--primary)"
+                fontWeight={700}
+              >
+                {formatLength(draftLength, project.unitSystem)}
+              </text>
+            </g>
           )}
         </svg>
       </div>

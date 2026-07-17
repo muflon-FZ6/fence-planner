@@ -58,10 +58,11 @@ export function smallLengthLabel(unitSystem: UnitSystem): string {
 export function formatLength(
   inches: number,
   unitSystem: UnitSystem,
-  digits = 1,
+  digits = 0,
 ): string {
   const value = fromInches(inches, unitSystem, true);
   const unit = lengthLabel(unitSystem);
+  // Illustrative plans: prefer whole feet / half-meters unless caller asks otherwise
   return `${value.toFixed(digits)} ${unit}`;
 }
 

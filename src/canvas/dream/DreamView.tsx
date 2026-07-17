@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { classifyPosts, pointAlongRun } from "@/domain/geometry";
 import { inchesToFeet } from "@/domain/units";
 import type { FenceFinish, FenceProject } from "@/domain/types";
@@ -43,8 +43,42 @@ function DreamFallback({ project }: { project: FenceProject }) {
   );
 }
 
-export function DreamView({ fallback = false }: { fallback?: boolean }) {
-  const { project, updateGate, selectedRunId } = useProject();
+type DreamViewProps = {
+  fallback?: boolean;
+  /** Frozen plan snapshot for on-demand preview (not live). */
+  snapshot?: FenceProject | null;
+  subtitle?: string;
+};
+
+export function DreamView({
+  fallback = false,
+  snapshot = null,
+  subtitle,
+}: DreamViewProps) {
+  const live = useProject();
+  const [preview, setPreview] = useState<FenceProject | null>(null);
+
+  useEffect(() => {
+    setPreview(snapshot ? structuredClone(snapshot) : null);
+  }, [snapshot]);
+
+  const project = preview ?? live.project;
+  const selectedRunId = preview ? null : live.selectedRunId;
+
+  function toggleGate(gateId: string) {
+    if (preview) {
+      setPreview({
+        ...preview,
+        gates: preview.gates.map((g) =>
+          g.id === gateId ? { ...g, swingOpen: !g.swingOpen } : g,
+        ),
+      });
+      return;
+    }
+    const gate = live.project.gates.find((g) => g.id === gateId);
+    if (gate) live.updateGate(gateId, { swingOpen: !gate.swingOpen });
+  }
+
   const posts = useMemo(() => classifyPosts(project), [project]);
   const height = Math.max(24, project.settings.fenceHeight * 0.35);
   const color = FINISH_COLORS[project.settings.finish] ?? "#b07a45";
@@ -100,10 +134,15 @@ export function DreamView({ fallback = false }: { fallback?: boolean }) {
 
   return (
       <div className="flex h-full min-h-[320px] flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)] animate-soft-rise">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2 text-sm">
-          <span className="font-medium text-primary">Dream View</span>
+        <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 text-sm">
+          <span className="font-medium text-primary">
+            {preview ? "Dream preview" : "Dream View"}
+          </span>
           <span className="text-xs text-foreground/55">
-            Illustrative — not a survey rendering
+            {subtitle ??
+              (preview
+                ? "Rendered from your plan — illustrative only"
+                : "Illustrative — not a survey rendering")}
           </span>
         </div>
         <svg
@@ -219,7 +258,7 @@ export function DreamView({ fallback = false }: { fallback?: boolean }) {
                 key={gate.id}
                 className="cursor-pointer"
                 onClick={() =>
-                  updateGate(gate.id, { swingOpen: !gate.swingOpen })
+                  toggleGate(gate.id)
                 }
               >
                 <polygon

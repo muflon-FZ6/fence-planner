@@ -11,12 +11,15 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="no-print border-b border-border/80 bg-surface/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-        <Link href="/" className="group flex flex-col leading-tight">
-          <span className="font-display text-xl tracking-tight text-primary md:text-2xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:gap-4 md:px-6">
+        <Link
+          href="/"
+          className="group flex min-w-0 flex-1 flex-col leading-tight sm:flex-none"
+        >
+          <span className="font-display text-lg tracking-tight text-primary sm:text-xl md:text-2xl">
             Fence Planner
           </span>
-          <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/55">
+          <span className="hidden text-[11px] uppercase tracking-[0.14em] text-foreground/55 sm:block">
             A Double M free utility
           </span>
         </Link>
@@ -33,9 +36,10 @@ export function SiteHeader() {
         </nav>
         <Link
           href="/fence-planner"
-          className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+          className="shrink-0 rounded-md bg-primary px-2.5 py-2 text-xs font-semibold text-white transition hover:bg-primary-hover sm:px-3 sm:text-sm"
         >
-          Start planning
+          <span className="sm:hidden">Plan</span>
+          <span className="hidden sm:inline">Start planning</span>
         </Link>
       </div>
     </header>

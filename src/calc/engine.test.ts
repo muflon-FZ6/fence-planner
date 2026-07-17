@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { calculateMaterials, calculateQuickEstimate } from "./engine";
 import { calculateConcreteBags } from "./concrete";
+import { calculateFasteners, packageCount } from "./fasteners";
 import { calculatePanels } from "./panel";
-import { calculateWoodPrivacy } from "./woodPrivacy";
+import { calculateWoodPrivacy, layoutBayBoards } from "./woodPrivacy";
 import { calculateChainLink } from "./chainLink";
 import { createEmptyProject, cryptoRandomId, defaultSettings } from "@/domain/defaults";
 import { rebuildJoints, syncRunLengths } from "@/domain/geometry";
@@ -64,7 +65,7 @@ describe("panel fence", () => {
     const panels = calculatePanels(project);
     expect(panels.cutPanels.length).toBeGreaterThanOrEqual(1);
     const warnings = validateProject(project);
-    expect(warnings.some((w) => w.message.includes("section"))).toBe(true);
+    expect(warnings.some((w) => w.id === "panel_leftovers")).toBe(true);
   });
 
   it("L-shaped fence shares one corner post", () => {
@@ -197,9 +198,15 @@ describe("site-built wood fence", () => {
     const project = withRuns("wood_privacy", [run]);
     project.settings.picketWidth = 5.5;
     project.settings.picketGap = 0;
+    project.settings.postSpacing = feetToInches(10);
+    project.settings.postWidth = 4;
     project.settings.applyWasteToPickets = false;
     const wood = calculateWoodPrivacy(project);
-    expect(wood.pickets).toBe(Math.ceil(feetToInches(10) / 5.5));
+    const clearBay = feetToInches(10) - 4;
+    const layout = layoutBayBoards(clearBay, 5.5, 0);
+    expect(wood.pickets).toBe(
+      layout.fullCount + (layout.cutWidth > 0 ? 1 : 0),
+    );
   });
 
   it("pickets with configured gap", () => {
@@ -207,9 +214,23 @@ describe("site-built wood fence", () => {
     const project = withRuns("wood_privacy", [run]);
     project.settings.picketWidth = 5.5;
     project.settings.picketGap = 1.5;
+    project.settings.postSpacing = feetToInches(10);
+    project.settings.postWidth = 4;
     project.settings.applyWasteToPickets = false;
     const wood = calculateWoodPrivacy(project);
-    expect(wood.pickets).toBe(Math.ceil(feetToInches(10) / 7));
+    const clearBay = feetToInches(10) - 4;
+    const layout = layoutBayBoards(clearBay, 5.5, 1.5);
+    expect(wood.pickets).toBe(
+      layout.fullCount + (layout.cutWidth > 0 ? 1 : 0),
+    );
+  });
+
+  it("rips a cut-to-width board when a full board will not fit", () => {
+    // Typical 8 ft O.C. clear bay with 5.5" boards / 1.5" gaps leaves a rip
+    const layout = layoutBayBoards(92, 5.5, 1.5);
+    expect(layout.fullCount).toBeGreaterThan(0);
+    expect(layout.cutWidth).toBeGreaterThan(0);
+    expect(layout.cutWidth).toBeLessThan(5.5);
   });
 
   it("waste percentage change increases pickets", () => {
@@ -221,6 +242,102 @@ describe("site-built wood fence", () => {
     project.settings.wastePercent = 10;
     const b = calculateWoodPrivacy(project).pickets;
     expect(b).toBeGreaterThanOrEqual(a);
+  });
+
+  it("board-on-board uses more boards than solid", () => {
+    const run = makeRun(0, 0, feetToInches(16), 0);
+    const solid = withRuns("wood_privacy", [run]);
+    solid.settings.boardPattern = "solid";
+    solid.settings.picketWidth = 5.5;
+    solid.settings.picketGap = 0;
+    solid.settings.applyWasteToPickets = false;
+    const bob = structuredClone(solid);
+    bob.settings.boardPattern = "board_on_board";
+    bob.settings.picketGap = 1;
+    const a = calculateWoodPrivacy(solid).pickets;
+    const b = calculateWoodPrivacy(bob).pickets;
+    expect(b).toBeGreaterThan(a);
+  });
+
+  it("board-and-batten adds battens", () => {
+    const run = makeRun(0, 0, feetToInches(16), 0);
+    const project = withRuns("wood_privacy", [run]);
+    project.settings.boardPattern = "board_and_batten";
+    project.settings.picketGap = 0;
+    project.settings.applyWasteToPickets = false;
+    const wood = calculateWoodPrivacy(project);
+    expect(wood.pickets).toBeGreaterThan(0);
+    expect(wood.battens).toBeGreaterThan(0);
+    const result = calculateMaterials(project);
+    expect(result.lines.some((l) => l.id === "battens")).toBe(true);
+  });
+
+  it("wood frame wire uses wire panels instead of pickets", () => {
+    const run = makeRun(0, 0, feetToInches(24), 0);
+    const project = withRuns("wood_privacy", [run]);
+    project.settings.boardPattern = "wire_mesh";
+    project.settings.postSpacing = feetToInches(8);
+    project.settings.applyWasteToPickets = false;
+    const wood = calculateWoodPrivacy(project);
+    expect(wood.pickets).toBe(0);
+    expect(wood.wirePanels).toBe(wood.spans);
+    const result = calculateMaterials(project);
+    expect(result.lines.some((l) => l.id === "wire_panels")).toBe(true);
+  });
+});
+
+describe("fasteners", () => {
+  it("packages with waste to retail pack sizes", () => {
+    expect(packageCount(0, 5)).toBe(0);
+    expect(packageCount(40, 0)).toBe(50);
+    expect(packageCount(95, 5)).toBe(100);
+    expect(packageCount(101, 0)).toBe(200);
+  });
+
+  it("estimates board and rail screws for wood privacy", () => {
+    const run = makeRun(0, 0, feetToInches(16), 0);
+    const project = withRuns("wood_privacy", [run]);
+    project.settings.railsPerSpan = 3;
+    project.settings.picketWidth = 5.5;
+    project.settings.picketGap = 0;
+    project.settings.applyWasteToPickets = false;
+    project.settings.applyWasteToRails = false;
+    project.settings.wastePercent = 0;
+
+    const wood = calculateWoodPrivacy(project);
+    const result = calculateMaterials(project);
+    const boards = result.lines.find((l) => l.id === "screws_boards");
+    const rails = result.lines.find((l) => l.id === "screws_rails");
+
+    expect(boards).toBeDefined();
+    expect(rails).toBeDefined();
+    expect(boards!.spec).toMatch(/2 in/);
+    expect(rails!.spec).toMatch(/3 in/);
+
+    const boardRaw = wood.pickets * 3 * 2;
+    const railRaw = wood.rails * 4;
+    expect(boards!.quantity).toBe(packageCount(boardRaw, 0));
+    expect(rails!.quantity).toBe(packageCount(railRaw, 0));
+    expect(result.lines.some((l) => l.unit === "allowance")).toBe(false);
+  });
+
+  it("adds trim screws when kickboard is enabled", () => {
+    const run = makeRun(0, 0, feetToInches(24), 0);
+    const project = withRuns("wood_privacy", [run]);
+    project.settings.hasKickboard = true;
+    const withKick = calculateFasteners(project, calculateWoodPrivacy(project));
+    project.settings.hasKickboard = false;
+    const without = calculateFasteners(project, calculateWoodPrivacy(project));
+    expect(withKick.lines.some((l) => l.id === "screws_trim")).toBe(true);
+    expect(without.lines.some((l) => l.id === "screws_trim")).toBe(false);
+  });
+
+  it("estimates panel brackets", () => {
+    const run = makeRun(0, 0, feetToInches(80), 0);
+    const project = withRuns("panel", [run]);
+    const result = calculateMaterials(project);
+    const brackets = result.lines.find((l) => l.id === "panel_brackets");
+    expect(brackets?.quantity).toBe((result.panels?.totalPanelsToBuy ?? 0) * 4);
   });
 });
 

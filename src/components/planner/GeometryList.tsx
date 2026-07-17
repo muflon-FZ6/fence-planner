@@ -1,5 +1,6 @@
 "use client";
 
+import { planGridInches, snapLength } from "@/domain/snap";
 import { formatLength, fromInches, toInches } from "@/domain/units";
 import { useProject } from "@/state/projectStore";
 
@@ -54,16 +55,20 @@ export function GeometryList() {
               Length ({project.unitSystem === "imperial" ? "ft" : "m"})
               <input
                 type="number"
-                min={0.1}
-                step={0.1}
+                min={1}
+                step={1}
                 className="w-24 rounded border border-border bg-surface px-2 py-1"
                 value={Number(
-                  fromInches(run.length, project.unitSystem).toFixed(2),
+                  fromInches(run.length, project.unitSystem).toFixed(0),
                 )}
                 onChange={(e) => {
                   const display = Number(e.target.value);
                   if (!Number.isFinite(display) || display <= 0) return;
-                  const newLen = toInches(display, project.unitSystem);
+                  const grid = planGridInches(project.unitSystem);
+                  const newLen = snapLength(
+                    toInches(display, project.unitSystem),
+                    grid,
+                  );
                   const scale = run.length > 0 ? newLen / run.length : 1;
                   updateRun(run.id, {
                     end: {
@@ -114,18 +119,21 @@ export function GeometryList() {
                       Width
                       <input
                         type="number"
+                        min={1}
+                        step={1}
                         className="mt-0.5 w-full rounded border border-border px-1 py-0.5"
                         value={Number(
-                          fromInches(gate.width, project.unitSystem).toFixed(2),
+                          fromInches(gate.width, project.unitSystem).toFixed(0),
                         )}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const grid = planGridInches(project.unitSystem);
                           updateGate(gate.id, {
-                            width: toInches(
-                              Number(e.target.value),
-                              project.unitSystem,
+                            width: snapLength(
+                              toInches(Number(e.target.value), project.unitSystem),
+                              grid,
                             ),
-                          })
-                        }
+                          });
+                        }}
                       />
                     </label>
                     <label className="text-[11px]">

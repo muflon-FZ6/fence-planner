@@ -1,21 +1,27 @@
 "use client";
 
-import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { ProjectProvider } from "@/state/projectStore";
-import { Workspace } from "@/components/planner/Workspace";
+
+function PlannerLoading() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center text-sm text-foreground/60">
+      Restoring your local project…
+    </div>
+  );
+}
+
+/** localStorage-backed planner — skip SSR so server HTML cannot disagree with the client. */
+const Workspace = dynamic(
+  () =>
+    import("@/components/planner/Workspace").then((module) => module.Workspace),
+  { ssr: false, loading: () => <PlannerLoading /> },
+);
 
 export default function FencePlannerPage() {
   return (
     <ProjectProvider>
-      <Suspense
-        fallback={
-          <div className="flex min-h-[40vh] items-center justify-center text-sm text-foreground/60">
-            Loading planner…
-          </div>
-        }
-      >
-        <Workspace />
-      </Suspense>
+      <Workspace />
     </ProjectProvider>
   );
 }

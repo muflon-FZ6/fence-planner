@@ -44,13 +44,11 @@
 }
 
 body {
-  background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, #dceee4 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, #e8dcc8 0%, transparent 50%),
-    var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), ui-sans-serif, sans-serif;
   font-variant-numeric: tabular-nums;
+  overflow-x: clip;
 }
 
 h1,
@@ -76,6 +74,29 @@ h3,
 
   .print-sheet {
     display: block !important;
+  }
+
+  /* Full-plan print: do not include the shopping-list-only sheet */
+  .shopping-list-print {
+    display: none !important;
+  }
+
+  /* Shopping-list-only print (BuildPanel → Print list) */
+  body.print-shopping-list .print-sheet {
+    display: none !important;
+  }
+
+  body.print-shopping-list .shopping-list-print {
+    display: block !important;
+  }
+
+  body.print-shopping-list .shopping-list-print table {
+    page-break-inside: auto;
+  }
+
+  body.print-shopping-list .shopping-list-print tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
 }
 

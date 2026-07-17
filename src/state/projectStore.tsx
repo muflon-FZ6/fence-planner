@@ -8,6 +8,7 @@ import {
   useMemo,
   useReducer,
   useRef,
+  useState,
 } from "react";
 import { calculateMaterials } from "@/calc/engine";
 import { createEmptyProject, cryptoRandomId } from "@/domain/defaults";
@@ -36,6 +37,15 @@ import {
 import { validateProject } from "@/warnings/validate";
 
 const MAX_HISTORY = 50;
+
+function createSsrDraft(): FenceProject {
+  return createEmptyProject({
+    id: "ssr-draft",
+    name: "My Fence Plan",
+    createdAt: "1970-01-01T00:00:00.000Z",
+    updatedAt: "1970-01-01T00:00:00.000Z",
+  });
+}
 
 type State = {
   project: FenceProject;
@@ -166,32 +176,37 @@ export function ProjectProvider({
   children: React.ReactNode;
   initial?: FenceProject;
 }) {
-  const [state, dispatch] = useReducer(reducer, {
-    project: initial ?? createEmptyProject({ name: "My Fence Plan" }),
+  // useState(false)+effect: first SSR and client paints match (unlike useSyncExternalStore).
+  const [storageReady, setStorageReady] = useState(false);
+  const [state, dispatch] = useReducer(reducer, undefined, () => ({
+    project: createSsrDraft(),
     past: [],
     future: [],
     selectedRunId: null,
     selectedGateId: null,
     highlightKeys: [],
     dismissedWarnings: [],
-    hydrated: Boolean(initial),
-  });
+    hydrated: false,
+  }));
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (initial) return;
-    const saved = loadCurrentProject();
-    if (saved) {
-      dispatch({ type: "HYDRATE", project: saved });
+    if (initial) {
+      dispatch({ type: "HYDRATE", project: initial });
     } else {
-      dispatch({ type: "HYDRATE", project: state.project });
+      const saved = loadCurrentProject();
+      dispatch({
+        type: "HYDRATE",
+        project: saved ?? createEmptyProject({ name: "My Fence Plan" }),
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setStorageReady(true);
+  }, [initial]);
 
   useEffect(() => {
-    if (!state.hydrated) return;
+    if (!storageReady || !state.hydrated) return;
+    if (state.project.id === "ssr-draft") return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       saveCurrentProject(state.project);
@@ -204,7 +219,7 @@ export function ProjectProvider({
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [state.project, state.hydrated]);
+  }, [state.project, state.hydrated, storageReady]);
 
   const materials = useMemo(
     () => calculateMaterials(state.project),
@@ -228,7 +243,7 @@ export function ProjectProvider({
     selectedRunId: state.selectedRunId,
     selectedGateId: state.selectedGateId,
     highlightKeys: state.highlightKeys,
-    hydrated: state.hydrated,
+    hydrated: storageReady && state.hydrated,
     canUndo: state.past.length > 0,
     canRedo: state.future.length > 0,
     setProject,
@@ -257,6 +272,7 @@ export function ProjectProvider({
       };
       track("add_fence_run");
       setProject({ ...state.project, runs: [...state.project.runs, run] });
+      dispatch({ type: "SELECT_RUN", id: run.id });
     },
     updateRun: (id, patch) => {
       setProject({
@@ -272,6 +288,7 @@ export function ProjectProvider({
         runs: state.project.runs.filter((r) => r.id !== id),
         gates: state.project.gates.filter((g) => g.runId !== id),
       });
+      dispatch({ type: "SELECT_RUN", id: null });
     },
     addGate: (runId, offset, width, gateType = "single") => {
       const gate: Gate = {

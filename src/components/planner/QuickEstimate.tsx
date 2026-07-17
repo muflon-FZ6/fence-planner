@@ -229,8 +229,15 @@ export function QuickEstimate({
                   key={line.id}
                   className="flex justify-between gap-3 border-b border-border/60 py-1.5"
                 >
-                  <span>{line.label}</span>
-                  <span className="font-semibold tabular-nums">
+                  <span>
+                    <span className="block">{line.label}</span>
+                    {line.spec && (
+                      <span className="block text-xs text-foreground/55">
+                        {line.spec}
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 font-semibold tabular-nums">
                     {line.quantity} {line.unit}
                   </span>
                 </li>

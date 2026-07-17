@@ -1,6 +1,7 @@
 "use client";
 
 import { classifyPosts } from "@/domain/geometry";
+import { styleSummary } from "@/domain/styleDefaults";
 import { formatLength } from "@/domain/units";
 import { useProject } from "@/state/projectStore";
 
@@ -21,15 +22,15 @@ export function PrintSheet() {
       </header>
 
       <section className="mt-4">
-        <h2 className="text-lg font-semibold">Project preview</h2>
+        <h2 className="text-lg font-semibold">Fence construction style</h2>
         <p className="text-sm">
-          Illustrative scene — measurements below are the planning source of
-          truth.
+          {styleSummary(project.settings, project.fenceType)} ·{" "}
+          {formatLength(project.settings.fenceHeight, project.unitSystem)} high
         </p>
-        <div className="mt-2 h-32 border border-black/30 bg-neutral-100 p-3 text-sm">
-          {project.runs.length} runs ·{" "}
+        <div className="mt-2 h-20 border border-black/30 bg-neutral-100 p-3 text-sm">
+          {project.runs.length} fence lines ·{" "}
           {formatLength(materials.totalFenceLength, project.unitSystem)} total ·{" "}
-          {project.gates.length} gate(s) · {posts.length} posts placed
+          {project.gates.length} gate(s) · {posts.length} posts
         </div>
       </section>
 
@@ -75,11 +76,14 @@ export function PrintSheet() {
       </section>
 
       <section className="mt-4">
-        <h2 className="text-lg font-semibold">Materials</h2>
+        <h2 className="text-lg font-semibold">Shopping list</h2>
         <table className="mt-2 w-full border-collapse text-sm">
           <thead>
             <tr>
               <th className="border border-black/40 px-2 py-1 text-left">Item</th>
+              <th className="border border-black/40 px-2 py-1 text-left">
+                Size to buy
+              </th>
               <th className="border border-black/40 px-2 py-1 text-right">Qty</th>
               <th className="border border-black/40 px-2 py-1 text-right">Price</th>
             </tr>
@@ -87,11 +91,19 @@ export function PrintSheet() {
           <tbody>
             {materials.lines.map((line) => (
               <tr key={line.id}>
-                <td className="border border-black/40 px-2 py-1">{line.label}</td>
-                <td className="border border-black/40 px-2 py-1 text-right">
+                <td className="border border-black/40 px-2 py-1 align-top">
+                  <div className="font-medium">{line.label}</div>
+                  {line.note && (
+                    <div className="text-xs text-black/60">{line.note}</div>
+                  )}
+                </td>
+                <td className="border border-black/40 px-2 py-1 align-top">
+                  {line.spec ?? "—"}
+                </td>
+                <td className="border border-black/40 px-2 py-1 text-right align-top">
                   {line.quantity} {line.unit}
                 </td>
-                <td className="border border-black/40 px-2 py-1 text-right">
+                <td className="border border-black/40 px-2 py-1 text-right align-top">
                   ________
                 </td>
               </tr>

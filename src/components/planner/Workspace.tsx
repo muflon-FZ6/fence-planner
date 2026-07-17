@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PlanView } from "@/canvas/plan/PlanView";
@@ -9,8 +8,8 @@ import { BuildPanel } from "@/components/planner/BuildPanel";
 import { GeometryList } from "@/components/planner/GeometryList";
 import { Onboarding } from "@/components/planner/Onboarding";
 import { PrintSheet } from "@/components/planner/PrintSheet";
-import { SceneControls } from "@/components/planner/SceneControls";
-import { SettingsPanel } from "@/components/planner/SettingsPanel";
+import { ShoppingListPrint } from "@/components/planner/ShoppingListPrint";
+import { StyleStudio } from "@/components/planner/StyleBuilder";
 import { cryptoRandomId, defaultSettings } from "@/domain/defaults";
 import { rebuildJoints, syncRunLengths } from "@/domain/geometry";
 import {
@@ -22,28 +21,8 @@ import type { FenceType } from "@/domain/types";
 import { track } from "@/lib/analytics";
 import { useProject } from "@/state/projectStore";
 
-const DreamView = dynamic(
-  () =>
-    import("@/canvas/dream/DreamView").then((m) => m.DreamView),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex min-h-[320px] items-center justify-center rounded-lg border border-border bg-sky/30 text-sm text-foreground/60">
-        Loading Dream View…
-      </div>
-    ),
-  },
-);
-
-type ViewMode = "plan" | "dream" | "split";
-type DesktopStep = "space" | "layout" | "style" | "gates" | "finish" | "review";
-type MobileStage =
-  | "onboarding"
-  | "layout"
-  | "style"
-  | "dream"
-  | "materials"
-  | "print";
+/** Shared stages. Desktop only uses layout + style (materials live in the sidebar). */
+type Stage = "layout" | "style" | "materials" | "print";
 
 export function Workspace() {
   const router = useRouter();
@@ -60,11 +39,10 @@ export function Workspace() {
     duplicate,
     hydrated,
     replaceWith,
+    setName,
   } = useProject();
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("split");
-  const [step, setStep] = useState<DesktopStep>("space");
-  const [mobileStage, setMobileStage] = useState<MobileStage>("layout");
+  const [stage, setStage] = useState<Stage>("layout");
   const queryApplied = useRef(false);
   const shapeParam = searchParams.get("shape");
 
@@ -139,16 +117,22 @@ export function Workspace() {
 
   return (
     <>
-      <div className="no-print mx-auto max-w-[1600px] px-3 py-4 md:px-4">
-        {/* Top bar */}
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface px-3 py-2 shadow-[var(--shadow-soft)]">
-          <div>
-            <p className="font-display text-lg text-primary">
-              {project.name || "Untitled fence plan"}
-            </p>
+      <div className="no-print mx-auto w-full max-w-[1600px] px-3 py-4 md:px-4">
+        <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-surface px-3 py-2 shadow-[var(--shadow-soft)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <label className="block">
+              <span className="sr-only">Project name</span>
+              <input
+                type="text"
+                value={project.name ?? ""}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Untitled fence plan"
+                className="w-full max-w-md rounded-md border border-transparent bg-transparent px-1 py-0.5 font-display text-lg text-primary outline-none ring-primary hover:border-border focus:border-border focus:ring-2"
+              />
+            </label>
             <p className="text-xs text-foreground/55">
               Saved locally · {materials.posts.total} posts ·{" "}
-              {warnings.length} warning{warnings.length === 1 ? "" : "s"}
+              {warnings.length} tip{warnings.length === 1 ? "" : "s"}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -177,7 +161,10 @@ export function Workspace() {
             </button>
             <button
               type="button"
-              onClick={reset}
+              onClick={() => {
+                reset();
+                setOnboardingDismissed(false);
+              }}
               className="rounded border border-border px-2 py-1 text-xs font-semibold"
             >
               Reset
@@ -196,21 +183,22 @@ export function Workspace() {
           <Onboarding
             onDone={() => {
               setOnboardingDismissed(true);
-              setStep("layout");
-              setMobileStage("layout");
-              setViewMode("split");
+              setStage("layout");
             }}
             onQuick={() => router.push("/fence-calculator")}
           />
         ) : (
           <>
-            {/* Mobile stages */}
-            <div className="mb-3 flex gap-1 overflow-x-auto md:hidden">
+            {/* Phone + tablet: Layout / Style / Materials / Print */}
+            <div
+              className="mb-3 flex gap-1 overflow-x-auto pb-0.5 lg:hidden"
+              role="tablist"
+              aria-label="Planner sections"
+            >
               {(
                 [
                   ["layout", "Layout"],
                   ["style", "Style"],
-                  ["dream", "Dream"],
                   ["materials", "Materials"],
                   ["print", "Print"],
                 ] as const
@@ -218,11 +206,13 @@ export function Workspace() {
                 <button
                   key={id}
                   type="button"
-                  onClick={() => setMobileStage(id)}
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-                    mobileStage === id
+                  role="tab"
+                  aria-selected={stage === id}
+                  onClick={() => setStage(id)}
+                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                    stage === id
                       ? "bg-primary text-white"
-                      : "bg-surface-muted"
+                      : "bg-surface-muted text-foreground/80"
                   }`}
                 >
                   {label}
@@ -230,125 +220,99 @@ export function Workspace() {
               ))}
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
-              {/* Left rail */}
-              <aside className="no-print hidden space-y-4 lg:block">
-                <nav className="rounded-lg border border-border bg-surface p-2">
-                  {(
-                    [
-                      ["space", "Space"],
-                      ["layout", "Layout"],
-                      ["style", "Fence style"],
-                      ["gates", "Gates"],
-                      ["finish", "Finish"],
-                      ["review", "Review"],
-                    ] as const
-                  ).map(([id, label]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setStep(id)}
-                      className={`mb-1 block w-full rounded px-2 py-2 text-left text-sm ${
-                        step === id
-                          ? "bg-primary-soft font-semibold text-primary"
-                          : "hover:bg-surface-muted"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </nav>
-                <div className="rounded-lg border border-border bg-surface p-3">
-                  {step === "layout" || step === "gates" ? (
+            {/* Desktop: Layout / Fence style (shopping list stays in sidebar) */}
+            <div
+              className="mb-3 hidden gap-2 lg:flex"
+              role="tablist"
+              aria-label="Planner sections"
+            >
+              {(
+                [
+                  ["layout", "Layout"],
+                  ["style", "Fence style"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={stage === id}
+                  onClick={() => setStage(id)}
+                  className={`rounded-md px-3 py-1.5 text-sm font-semibold ${
+                    stage === id
+                      ? "bg-primary text-white"
+                      : "border border-border bg-surface"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* ——— Mobile / tablet stages ——— */}
+            <div className="min-w-0 space-y-3 lg:hidden">
+              {stage === "layout" && (
+                <>
+                  <PlanView />
+                  <div className="rounded-lg border border-border bg-surface p-3">
                     <GeometryList />
-                  ) : step === "finish" ? (
-                    <SceneControls />
-                  ) : (
-                    <SettingsPanel />
-                  )}
+                  </div>
+                </>
+              )}
+              {stage === "style" && <StyleStudio />}
+              {stage === "materials" && <BuildPanel />}
+              {stage === "print" && (
+                <div className="rounded-lg border border-border bg-surface p-4">
+                  <h2 className="font-display text-lg text-primary">Print</h2>
+                  <p className="mt-1 text-sm text-foreground/70">
+                    Print your plan and shopping list, or save as PDF from the
+                    browser print dialog.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={print}
+                    className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white"
+                  >
+                    Print / Save PDF
+                  </button>
                 </div>
-              </aside>
+              )}
+            </div>
 
-              {/* Main canvas */}
-              <section className="min-w-0 space-y-3">
-                <div className="no-print hidden items-center gap-2 md:flex">
-                  {(
-                    [
-                      ["plan", "Plan"],
-                      ["dream", "Dream"],
-                      ["split", "Split"],
-                    ] as const
-                  ).map(([id, label]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setViewMode(id)}
-                      className={`rounded-md px-3 py-1.5 text-sm font-semibold ${
-                        viewMode === id
-                          ? "bg-primary text-white"
-                          : "bg-surface border border-border"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+            {/* ——— Desktop stages ——— */}
+            <div className="hidden lg:block">
+              {stage === "style" ? (
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+                  <StyleStudio />
+                  <aside className="no-print min-w-0">
+                    <BuildPanel />
+                    <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
+                  </aside>
                 </div>
-
-                {/* Desktop views */}
-                <div className="hidden md:block">
-                  {viewMode === "plan" && <PlanView />}
-                  {viewMode === "dream" && <DreamView />}
-                  {viewMode === "split" && (
-                    <div className="grid gap-3 xl:grid-cols-2">
-                      <PlanView />
-                      <DreamView />
+              ) : (
+                <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)_320px]">
+                  <aside className="no-print min-w-0 space-y-4">
+                    <div className="rounded-lg border border-border bg-surface p-3">
+                      <GeometryList />
                     </div>
-                  )}
-                </div>
+                  </aside>
 
-                {/* Mobile views */}
-                <div className="md:hidden">
-                  {(mobileStage === "layout" || mobileStage === "style") && (
-                    <>
-                      <PlanView />
-                      <div className="mt-3 rounded-lg border border-border bg-surface p-3">
-                        {mobileStage === "layout" ? (
-                          <GeometryList />
-                        ) : (
-                          <SettingsPanel />
-                        )}
-                      </div>
-                    </>
-                  )}
-                  {mobileStage === "dream" && <DreamView />}
-                  {mobileStage === "materials" && <BuildPanel />}
-                  {mobileStage === "print" && (
-                    <div className="rounded-lg border border-border bg-surface p-4">
-                      <p className="text-sm">
-                        Print a clean project sheet with materials and assumptions.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={print}
-                        className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white"
-                      >
-                        Print / Save PDF
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </section>
+                  <section className="min-w-0">
+                    <PlanView />
+                  </section>
 
-              {/* Right inspector */}
-              <aside className="no-print hidden lg:block">
-                <BuildPanel />
-                <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
-              </aside>
+                  <aside className="no-print min-w-0">
+                    <BuildPanel />
+                    <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
+                  </aside>
+                </div>
+              )}
             </div>
           </>
         )}
       </div>
       <PrintSheet />
+      <ShoppingListPrint />
     </>
   );
 }
