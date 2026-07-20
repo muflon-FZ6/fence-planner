@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "Draw your fence layout, see the finished look, and get a clear material estimate. Free forever — no account required.",
   icons: {
     icon: [
-      { url: "/brand/fence-planner-logo.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
     ],
