@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Plan the gate passage and swing before setting posts</title>
+  <desc id="desc">An overhead garden gate plan shows two gate posts, a clear passage, a gate swing arc, adjacent fence sections, and nearby steps that should remain clear.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#edf5ef"/><stop offset="1" stop-color="#faf2e5"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#214d3d" flood-opacity=".16"/></filter>
+    <style>.label{font-family:Arial,Helvetica,sans-serif;fill:#183e32}.large{font-size:46px;font-weight:700}.small{font-size:28px;font-weight:650}.note{font-size:24px;fill:#426358}.fence{stroke:#9a613a;stroke-width:18;stroke-linecap:round}.gate{stroke:#315f48;stroke-width:17;stroke-linecap:round}.arc{stroke:#c6802c;stroke-width:5;stroke-dasharray:12 10;fill:none}.line{stroke:#426358;stroke-width:4;fill:none}</style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="105" y="110" class="label large">Plan the passage and swing before setting gate posts</text>
+  <text x="105" y="155" class="label note">Start with what needs to pass through the opening, then choose the gate product that fits it.</text>
+  <g filter="url(#shadow)"><rect x="100" y="220" width="1400" height="560" rx="36" fill="#dcebd7" stroke="#c0d3c2" stroke-width="4"/></g>
+  <!-- path and steps -->
+  <path d="M1050 315H1420V700H1050Z" fill="#e8e0d2" stroke="#c7b9a6" stroke-width="4"/>
+  <path d="M1090 370H1380M1090 420H1380M1090 470H1380" stroke="#c8b89f" stroke-width="13"/>
+  <text x="1235" y="545" text-anchor="middle" class="label note">keep the gate clear of steps</text>
+  <!-- fence and posts -->
+  <path d="M240 545H575M895 545H1290" class="fence"/>
+  <circle cx="575" cy="545" r="30" fill="#315f48" stroke="#fffdf7" stroke-width="8"/>
+  <circle cx="895" cy="545" r="30" fill="#315f48" stroke="#fffdf7" stroke-width="8"/>
+  <!-- open gate panel -->
+  <path d="M575 545L770 350" class="gate"/>
+  <path d="M575 545A276 276 0 0 1 850 545" class="arc"/>
+  <!-- arrows on swing -->
+  <path d="M811 391l38 25-44 13" fill="#c6802c"/>
+  <!-- passage line -->
+  <path d="M575 615H895" stroke="#c6802c" stroke-width="5" stroke-dasharray="12 10"/>
+  <path d="M575 599v32M895 599v32" stroke="#c6802c" stroke-width="4"/>
+  <rect x="615" y="632" width="240" height="54" rx="27" fill="#fff9e9" stroke="#c6802c" stroke-width="3"/>
+  <text x="735" y="668" text-anchor="middle" class="label small">clear passage</text>
+  <!-- callouts -->
+  <g filter="url(#shadow)"><rect x="185" y="315" width="340" height="99" rx="18" fill="#fffdf8"/><rect x="690" y="238" width="325" height="99" rx="18" fill="#fffdf8"/><rect x="295" y="690" width="420" height="70" rx="18" fill="#fffdf8"/></g>
+  <text x="215" y="354" class="label small">Choose the gate product</text><text x="215" y="388" class="label note">before setting these posts</text><path d="M525 390L575 520" class="line"/>
+  <text x="720" y="277" class="label small">Check the swing path</text><text x="720" y="311" class="label note">with string or a board</text><path d="M870 337L790 390" class="line"/>
+  <text x="325" y="735" class="label small">Check the fence sections on both sides too</text>
+  <text x="800" y="850" text-anchor="middle" class="label note">Fence Planner helps compare gate positions; manufacturer instructions set the final post opening and hardware clearances.</text>
+</svg>

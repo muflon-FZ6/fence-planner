@@ -1,4 +1,5 @@
 import { defaultSettings } from "@/domain/defaults";
+import { defaultPricingCountry } from "@/domain/pricingPrefs";
 import type { FenceProject, FenceSettings } from "@/domain/types";
 
 const CURRENT_KEY = "fence-planner:current";
@@ -28,7 +29,13 @@ function normalizeProject(project: FenceProject): FenceProject {
     latticeHeight: resolveLatticeHeight(prev, base),
     postCap: prev.postCap ?? base.postCap,
   };
-  return { ...project, settings };
+  return {
+    ...project,
+    settings,
+    pricingCountry:
+      project.pricingCountry ?? defaultPricingCountry(project.unitSystem),
+    priceOverrides: project.priceOverrides ?? {},
+  };
 }
 
 function resolveLatticeHeight(

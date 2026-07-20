@@ -20,9 +20,11 @@ export default function ExamplesPage() {
         {examples.map((ex) => (
           <article
             key={ex.slug}
-            className="rounded-lg border border-border bg-surface p-4"
+            className="rounded-lg border border-border bg-surface p-6"
           >
-            <h2 className="font-semibold">{ex.title}</h2>
+            <h2 className="font-display text-2xl font-semibold leading-[1.2]">
+              {ex.title}
+            </h2>
             <p className="mt-2 text-sm text-foreground/70">{ex.summary}</p>
             <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-foreground/50">
               Assumptions

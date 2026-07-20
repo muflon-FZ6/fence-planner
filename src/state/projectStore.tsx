@@ -8,15 +8,17 @@ import {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from "react";
 import { calculateMaterials } from "@/calc/engine";
+import { estimateProjectMaterialsCost } from "@/calc/pricing";
+import type { ProjectPriceEstimate } from "@/content/pricing/types";
 import { createEmptyProject, cryptoRandomId } from "@/domain/defaults";
 import {
   distance,
   rebuildJoints,
   syncRunLengths,
 } from "@/domain/geometry";
+import { resolvePricingCountry } from "@/domain/pricingPrefs";
 import type {
   FenceProject,
   FenceRun,
@@ -24,6 +26,7 @@ import type {
   Gate,
   MaterialResult,
   Point,
+  PricingCountry,
   ProjectIntent,
   ProjectWarning,
 } from "@/domain/types";
@@ -137,6 +140,7 @@ function reducer(state: State, action: Action): State {
 type ProjectContextValue = {
   project: FenceProject;
   materials: MaterialResult;
+  priceEstimate: ProjectPriceEstimate;
   warnings: ProjectWarning[];
   selectedRunId: string | null;
   selectedGateId: string | null;
@@ -150,6 +154,9 @@ type ProjectContextValue = {
   setUnitSystem: (unit: FenceProject["unitSystem"]) => void;
   setName: (name: string) => void;
   setIntent: (intent: ProjectIntent) => void;
+  setPricingCountry: (country: PricingCountry) => void;
+  setPriceOverride: (lineId: string, unitPrice: number) => void;
+  clearPriceOverride: (lineId: string) => void;
   addRun: (start: Point, end: Point) => void;
   updateRun: (id: string, patch: Partial<FenceRun>) => void;
   deleteRun: (id: string) => void;
@@ -176,8 +183,6 @@ export function ProjectProvider({
   children: React.ReactNode;
   initial?: FenceProject;
 }) {
-  // useState(false)+effect: first SSR and client paints match (unlike useSyncExternalStore).
-  const [storageReady, setStorageReady] = useState(false);
   const [state, dispatch] = useReducer(reducer, undefined, () => ({
     project: createSsrDraft(),
     past: [],
@@ -201,11 +206,10 @@ export function ProjectProvider({
         project: saved ?? createEmptyProject({ name: "My Fence Plan" }),
       });
     }
-    setStorageReady(true);
   }, [initial]);
 
   useEffect(() => {
-    if (!storageReady || !state.hydrated) return;
+    if (!state.hydrated) return;
     if (state.project.id === "ssr-draft") return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
@@ -219,12 +223,30 @@ export function ProjectProvider({
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [state.project, state.hydrated, storageReady]);
+  }, [state.project, state.hydrated]);
 
   const materials = useMemo(
     () => calculateMaterials(state.project),
     [state.project],
   );
+
+  const priceEstimate = useMemo(() => {
+    const country = resolvePricingCountry(state.project);
+    const currency = country === "CA" ? "CAD" : "USD";
+    const overrides = Object.entries(state.project.priceOverrides ?? {}).map(
+      ([materialLineId, o]) => ({
+        materialLineId,
+        unitPrice: o.unitPrice,
+        currency: currency as "USD" | "CAD",
+        note: o.note,
+      }),
+    );
+    return estimateProjectMaterialsCost({
+      lines: materials.lines,
+      country,
+      overrides,
+    });
+  }, [state.project, materials.lines]);
 
   const warnings = useMemo(() => {
     return validateProject(state.project).filter(
@@ -239,11 +261,12 @@ export function ProjectProvider({
   const value: ProjectContextValue = {
     project: state.project,
     materials,
+    priceEstimate,
     warnings,
     selectedRunId: state.selectedRunId,
     selectedGateId: state.selectedGateId,
     highlightKeys: state.highlightKeys,
-    hydrated: storageReady && state.hydrated,
+    hydrated: state.hydrated,
     canUndo: state.past.length > 0,
     canRedo: state.future.length > 0,
     setProject,
@@ -262,6 +285,38 @@ export function ProjectProvider({
     },
     setName: (name) => setProject({ ...state.project, name }, false),
     setIntent: (intent) => setProject({ ...state.project, intent }),
+    setPricingCountry: (pricingCountry) => {
+      setProject(
+        {
+          ...state.project,
+          pricingCountry,
+          // Drop overrides when currency market changes
+          priceOverrides: {},
+        },
+        false,
+      );
+    },
+    setPriceOverride: (lineId, unitPrice) => {
+      if (!Number.isFinite(unitPrice) || unitPrice < 0) return;
+      setProject(
+        {
+          ...state.project,
+          priceOverrides: {
+            ...(state.project.priceOverrides ?? {}),
+            [lineId]: {
+              unitPrice,
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        },
+        false,
+      );
+    },
+    clearPriceOverride: (lineId) => {
+      const next = { ...(state.project.priceOverrides ?? {}) };
+      delete next[lineId];
+      setProject({ ...state.project, priceOverrides: next }, false);
+    },
     addRun: (start, end) => {
       const run: FenceRun = {
         id: cryptoRandomId(),

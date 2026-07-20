@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { AdSlot } from "@/components/ads/AdSlot";
 
@@ -8,7 +9,16 @@ export function SiteFooter() {
         <AdSlot slot="footer" className="mb-8" />
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <p className="font-display text-lg text-primary">Fence Planner</p>
+            <p className="flex items-center gap-2.5 font-display text-lg text-primary">
+              <Image
+                src="/brand/fence-planner-logo.png"
+                alt=""
+                width={32}
+                height={32}
+                className="size-8 rounded-lg"
+              />
+              Fence Planner
+            </p>
             <p className="mt-2 text-sm text-foreground/70">
               Free fence layout and material estimates. Planning aid only — verify
               boundaries, permits, and product dimensions before you build.
@@ -47,7 +57,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="mt-8 text-xs text-foreground/50">
-          © {new Date().getFullYear()} A Double M. Always free. Estimates only.
+          © {new Date().getFullYear()} DoubleM. Always free. Estimates only.
         </p>
       </div>
     </footer>

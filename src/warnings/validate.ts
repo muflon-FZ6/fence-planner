@@ -1,8 +1,7 @@
-import { fillSegments, moduleWidth } from "@/domain/geometry";
-import { formatLength } from "@/domain/units";
+import { calculatePanels } from "@/calc/panel";
+import { formatLength, formatSmallLength } from "@/domain/units";
 import type { FenceProject, ProjectWarning } from "@/domain/types";
 
-const SHORT_SECTION_IN = 24;
 const GATE_NEAR_CORNER_IN = 12;
 
 /**
@@ -36,7 +35,8 @@ export function validateProject(project: FenceProject): ProjectWarning[] {
         warnings.push({
           id: `gate_wide_${gate.id}`,
           severity: "error",
-          message: "A gate is wider than the fence line it sits on. Make the gate smaller or the line longer.",
+          message:
+            "A gate is wider than the fence line it sits on. Make the gate smaller or the line longer.",
           runId: run.id,
           gateId: gate.id,
           actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
@@ -59,29 +59,44 @@ export function validateProject(project: FenceProject): ProjectWarning[] {
   }
 
   if (project.fenceType === "panel") {
-    const mod = moduleWidth(project);
-    let leftoverCount = 0;
-    let shortCount = 0;
+    const panels = calculatePanels(project);
+    const impossible = panels.cutPanels.filter(
+      (c) => c.status === "no_usable_clear_opening",
+    );
+    const short = panels.cutPanels.filter((c) => c.status === "short");
+    const leftover = panels.cutPanels.filter((c) => c.status === "valid");
 
-    for (const run of project.runs) {
-      for (const seg of fillSegments(project, run)) {
-        if (seg.length <= 0 || mod <= 0) continue;
-        const remainder = seg.length % mod;
-        if (remainder <= 0.5) continue;
-        leftoverCount += 1;
-        if (remainder < SHORT_SECTION_IN) shortCount += 1;
-      }
-    }
-
-    if (leftoverCount > 0) {
-      const panelSize = formatLength(project.settings.panelWidth, project.unitSystem);
+    if (impossible.length > 0) {
+      warnings.push({
+        id: "panel_no_usable_opening",
+        severity: "warning",
+        message:
+          "A partial bay has little or no clear panel space after the post faces. Move an endpoint or gate, or revise the panel module — do not trim a panel into that opening.",
+        actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
+      });
+    } else if (short.length > 0) {
+      const clearHint = formatSmallLength(
+        short[0].clearPanelSpace,
+        project.unitSystem,
+      );
       warnings.push({
         id: "panel_leftovers",
-        severity: shortCount > 0 ? "warning" : "info",
+        severity: "warning",
+        message: `A final bay leaves only about ${clearHint} of clear panel space (below the 24 in planning threshold). Confirm product fit or move a boundary. The shopping list still counts a whole stock panel for that bay.`,
+        actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
+      });
+    } else if (leftover.length > 0) {
+      const panelSize = formatLength(
+        project.settings.panelWidth,
+        project.unitSystem,
+      );
+      warnings.push({
+        id: "panel_leftovers",
+        severity: "info",
         message:
-          shortCount > 0
-            ? `Your yard isn’t an exact multiple of ${panelSize} panels, so a few short leftover pieces will need cutting. That’s common — the shopping list already counts those panels.`
-            : `Your fence won’t land on exact full panels (standard size about ${panelSize}). You’ll trim the last panel on some sides. The shopping list already includes that.`,
+          project.settings.moduleWidthMode === "includes_post"
+            ? `Your fence won’t land on exact full pitches (repeating pitch about ${panelSize}). You’ll verify clear space and fit on the last bay of some sides. The shopping list already includes that stock panel.`
+            : `Your fence won’t land on exact full panels (standard size about ${panelSize}). You’ll verify clear space and fit on the last bay of some sides. The shopping list already includes that panel.`,
         actions: [{ id: "dismiss", label: "Got it", kind: "dismiss" }],
       });
     }

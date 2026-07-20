@@ -2,27 +2,42 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ClipboardList,
+  Copy,
+  Pencil,
+  Printer,
+  Redo2,
+  RotateCcw,
+  Undo2,
+} from "lucide-react";
 import { PlanView } from "@/canvas/plan/PlanView";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { BuildPanel } from "@/components/planner/BuildPanel";
 import { GeometryList } from "@/components/planner/GeometryList";
 import { Onboarding } from "@/components/planner/Onboarding";
+import { ExampleLoader } from "@/components/planner/ExampleLoader";
 import { PrintSheet } from "@/components/planner/PrintSheet";
 import { ShoppingListPrint } from "@/components/planner/ShoppingListPrint";
+import { ShoppingListSheet } from "@/components/planner/ShoppingListSheet";
 import { StyleStudio } from "@/components/planner/StyleBuilder";
-import { cryptoRandomId, defaultSettings } from "@/domain/defaults";
+import {
+  createEmptyProject,
+  cryptoRandomId,
+  defaultSettings,
+} from "@/domain/defaults";
 import { rebuildJoints, syncRunLengths } from "@/domain/geometry";
 import {
   projectFromYardShape,
   type YardShape,
 } from "@/domain/presets";
+import { formatMoney } from "@/domain/pricingPrefs";
 import { feetToInches } from "@/domain/units";
 import type { FenceType } from "@/domain/types";
 import { track } from "@/lib/analytics";
 import { useProject } from "@/state/projectStore";
 
-/** Shared stages. Desktop only uses layout + style (materials live in the sidebar). */
-type Stage = "layout" | "style" | "materials" | "print";
+/** Work stages only — shopping list and print are Tools actions. */
+type Stage = "layout" | "style";
 
 export function Workspace() {
   const router = useRouter();
@@ -30,7 +45,7 @@ export function Workspace() {
   const {
     project,
     materials,
-    warnings,
+    priceEstimate,
     undo,
     redo,
     canUndo,
@@ -43,6 +58,7 @@ export function Workspace() {
   } = useProject();
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [stage, setStage] = useState<Stage>("layout");
+  const [shoppingOpen, setShoppingOpen] = useState(false);
   const queryApplied = useRef(false);
   const shapeParam = searchParams.get("shape");
 
@@ -54,7 +70,16 @@ export function Workspace() {
 
   useEffect(() => {
     if (!hydrated || queryApplied.current) return;
+    // Predefined examples use ExampleLoader confirmation — do not auto-replace here
+    if (searchParams.get("example")) return;
     queryApplied.current = true;
+
+    if (searchParams.get("blank") === "1") {
+      replaceWith(createEmptyProject({ name: "My Fence Plan" }));
+      router.replace("/fence-planner", { scroll: false });
+      return;
+    }
+
     const shape = shapeParam as YardShape | null;
     const type = searchParams.get("type") as FenceType | null;
     if (!shape) return;
@@ -100,12 +125,23 @@ export function Workspace() {
     next.runs = syncRunLengths(next.runs);
     next.joints = rebuildJoints(next);
     replaceWith(next);
-  }, [hydrated, shapeParam, searchParams, replaceWith]);
+  }, [hydrated, shapeParam, searchParams, replaceWith, router]);
 
   function print() {
     track("print_project");
     window.print();
   }
+
+  function openShoppingList() {
+    track("open_shopping_list");
+    setShoppingOpen(true);
+  }
+
+  const fillSummary = materials.panels
+    ? `${materials.panels.totalPanelsToBuy} panels`
+    : materials.pickets != null
+      ? `${materials.pickets} boards`
+      : `${materials.lines.length} items`;
 
   if (!hydrated) {
     return (
@@ -117,46 +153,59 @@ export function Workspace() {
 
   return (
     <>
+      <ExampleLoader />
+      <ShoppingListSheet
+        open={shoppingOpen}
+        onClose={() => setShoppingOpen(false)}
+      />
       <div className="no-print mx-auto w-full max-w-[1600px] px-3 py-4 md:px-4">
         <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-surface px-3 py-2 shadow-[var(--shadow-soft)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="min-w-0 flex-1">
-            <label className="block">
-              <span className="sr-only">Project name</span>
-              <input
-                type="text"
-                value={project.name ?? ""}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Untitled fence plan"
-                className="w-full max-w-md rounded-md border border-transparent bg-transparent px-1 py-0.5 font-display text-lg text-primary outline-none ring-primary hover:border-border focus:border-border focus:ring-2"
-              />
+            <label className="block max-w-md">
+              <span className="text-xs font-semibold text-foreground/65">
+                Project name
+              </span>
+              <span className="mt-1 flex items-center gap-2 rounded-md border border-border bg-surface-muted/40 px-2.5 py-1.5 shadow-sm transition focus-within:border-primary focus-within:bg-surface focus-within:ring-2 focus-within:ring-primary/30">
+                <Pencil
+                  className="size-3.5 shrink-0 text-foreground/45"
+                  aria-hidden
+                />
+                <input
+                  type="text"
+                  value={project.name ?? ""}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Untitled fence plan"
+                  autoComplete="off"
+                  className="min-w-0 flex-1 border-0 bg-transparent font-display text-base text-primary outline-none placeholder:text-foreground/40"
+                />
+              </span>
             </label>
-            <p className="text-xs text-foreground/55">
-              Saved locally · {materials.posts.total} posts ·{" "}
-              {warnings.length} tip{warnings.length === 1 ? "" : "s"}
-            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               disabled={!canUndo}
               onClick={undo}
-              className="rounded border border-border px-2 py-1 text-xs font-semibold disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded border border-border px-2 py-1 text-xs font-semibold transition hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-40"
             >
+              <Undo2 className="size-3.5 shrink-0" aria-hidden />
               Undo
             </button>
             <button
               type="button"
               disabled={!canRedo}
               onClick={redo}
-              className="rounded border border-border px-2 py-1 text-xs font-semibold disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded border border-border px-2 py-1 text-xs font-semibold transition hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-40"
             >
+              <Redo2 className="size-3.5 shrink-0" aria-hidden />
               Redo
             </button>
             <button
               type="button"
               onClick={duplicate}
-              className="rounded border border-border px-2 py-1 text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 rounded border border-border px-2 py-1 text-xs font-semibold transition hover:bg-surface-muted"
             >
+              <Copy className="size-3.5 shrink-0" aria-hidden />
               Duplicate
             </button>
             <button
@@ -165,15 +214,32 @@ export function Workspace() {
                 reset();
                 setOnboardingDismissed(false);
               }}
-              className="rounded border border-border px-2 py-1 text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 rounded border border-border px-2 py-1 text-xs font-semibold transition hover:bg-surface-muted"
             >
+              <RotateCcw className="size-3.5 shrink-0" aria-hidden />
               Reset
             </button>
             <button
               type="button"
-              onClick={print}
-              className="rounded bg-primary px-3 py-1.5 text-xs font-semibold text-white"
+              onClick={openShoppingList}
+              className="inline-flex items-center gap-1.5 rounded border border-primary/40 bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary transition hover:border-primary/60 hover:bg-primary-soft/80"
+              title="Open shopping list and materials estimate"
             >
+              <ClipboardList className="size-3.5 shrink-0" aria-hidden />
+              Shopping list
+              <span className="font-normal text-foreground/60">
+                {fillSummary} · {materials.posts.total} posts
+                {priceEstimate.materialsTypical > 0
+                  ? ` · Est. ${formatMoney(priceEstimate.materialsLow, priceEstimate.currency, { compact: true })}–${formatMoney(priceEstimate.materialsHigh, priceEstimate.currency, { compact: true })}`
+                  : ` · ${materials.concreteBags} bags`}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={print}
+              className="inline-flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-hover"
+            >
+              <Printer className="size-3.5 shrink-0" aria-hidden />
               Print plan
             </button>
           </div>
@@ -189,40 +255,8 @@ export function Workspace() {
           />
         ) : (
           <>
-            {/* Phone + tablet: Layout / Style / Materials / Print */}
             <div
-              className="mb-3 flex gap-1 overflow-x-auto pb-0.5 lg:hidden"
-              role="tablist"
-              aria-label="Planner sections"
-            >
-              {(
-                [
-                  ["layout", "Layout"],
-                  ["style", "Style"],
-                  ["materials", "Materials"],
-                  ["print", "Print"],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={stage === id}
-                  onClick={() => setStage(id)}
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                    stage === id
-                      ? "bg-primary text-white"
-                      : "bg-surface-muted text-foreground/80"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            {/* Desktop: Layout / Fence style (shopping list stays in sidebar) */}
-            <div
-              className="mb-3 hidden gap-2 lg:flex"
+              className="mb-3 flex flex-wrap gap-1.5"
               role="tablist"
               aria-label="Planner sections"
             >
@@ -238,10 +272,10 @@ export function Workspace() {
                   role="tab"
                   aria-selected={stage === id}
                   onClick={() => setStage(id)}
-                  className={`rounded-md px-3 py-1.5 text-sm font-semibold ${
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition sm:rounded-md sm:px-3 sm:text-sm ${
                     stage === id
-                      ? "bg-primary text-white"
-                      : "border border-border bg-surface"
+                      ? "bg-primary text-white hover:bg-primary-hover"
+                      : "border border-border bg-surface text-foreground/80 hover:border-primary/40 hover:bg-surface-muted"
                   }`}
                 >
                   {label}
@@ -249,65 +283,24 @@ export function Workspace() {
               ))}
             </div>
 
-            {/* ——— Mobile / tablet stages ——— */}
-            <div className="min-w-0 space-y-3 lg:hidden">
-              {stage === "layout" && (
-                <>
-                  <PlanView />
+            {stage === "layout" ? (
+              <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+                <aside className="order-2 min-w-0 space-y-4 lg:order-1">
                   <div className="rounded-lg border border-border bg-surface p-3">
                     <GeometryList />
                   </div>
-                </>
-              )}
-              {stage === "style" && <StyleStudio />}
-              {stage === "materials" && <BuildPanel />}
-              {stage === "print" && (
-                <div className="rounded-lg border border-border bg-surface p-4">
-                  <h2 className="font-display text-lg text-primary">Print</h2>
-                  <p className="mt-1 text-sm text-foreground/70">
-                    Print your plan and shopping list, or save as PDF from the
-                    browser print dialog.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={print}
-                    className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    Print / Save PDF
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* ——— Desktop stages ——— */}
-            <div className="hidden lg:block">
-              {stage === "style" ? (
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-                  <StyleStudio />
-                  <aside className="no-print min-w-0">
-                    <BuildPanel />
-                    <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
-                  </aside>
-                </div>
-              ) : (
-                <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)_320px]">
-                  <aside className="no-print min-w-0 space-y-4">
-                    <div className="rounded-lg border border-border bg-surface p-3">
-                      <GeometryList />
-                    </div>
-                  </aside>
-
-                  <section className="min-w-0">
-                    <PlanView />
-                  </section>
-
-                  <aside className="no-print min-w-0">
-                    <BuildPanel />
-                    <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
-                  </aside>
-                </div>
-              )}
-            </div>
+                  <AdSlot slot="sidebar" className="hidden min-h-[120px] lg:block" />
+                </aside>
+                <section className="order-1 min-w-0 lg:order-2">
+                  <PlanView />
+                </section>
+              </div>
+            ) : (
+              <div className="min-w-0">
+                <StyleStudio />
+                <AdSlot slot="sidebar" className="mt-4 min-h-[120px]" />
+              </div>
+            )}
           </>
         )}
       </div>

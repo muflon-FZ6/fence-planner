@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Measure every straight fence side separately</title>
+  <desc id="desc">A simple backyard plan shows temporary markers, a three-sided fence route, a gate opening, and a tape measure used on one straight side at a time.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#eaf2ee"/><stop offset="1" stop-color="#f9f3e8"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#214d3d" flood-opacity=".16"/></filter>
+    <style>
+      .label{font-family:Arial,Helvetica,sans-serif;fill:#183e32}.small{font-size:27px;font-weight:600}.large{font-size:46px;font-weight:700}.note{font-size:24px;fill:#426358}.line{stroke:#1c6048;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;fill:none}.measure{stroke:#c6802c;stroke-width:5;stroke-dasharray:14 12;fill:none}.thin{stroke:#426358;stroke-width:4;fill:none}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <text x="105" y="110" class="label large">Measure one straight side at a time</text>
+  <text x="105" y="155" class="label note">A quick sketch is enough—mark the turns, the gate, and anything in the way.</text>
+  <g filter="url(#shadow)">
+    <rect x="100" y="205" width="1400" height="570" rx="36" fill="#dfeeda" stroke="#c1d6c6" stroke-width="4"/>
+  </g>
+  <!-- house and deck -->
+  <g transform="translate(625 590)">
+    <rect x="0" y="0" width="390" height="145" rx="18" fill="#f4ede3" stroke="#8c7561" stroke-width="5"/>
+    <path d="M-20 0L195-110 410 0" fill="#c88955" stroke="#8c5a36" stroke-width="6" stroke-linejoin="round"/>
+    <rect x="145" y="72" width="100" height="73" fill="#afcbd2" stroke="#668a92" stroke-width="5"/>
+    <text x="195" y="55" text-anchor="middle" class="label small">house</text>
+  </g>
+  <!-- garden -->
+  <path d="M1280 574c85-48 145-46 177 22-29 54-95 74-183 44-31-12-26-43 6-66Z" fill="#b9ce8b" stroke="#819a5c" stroke-width="4"/>
+  <circle cx="1345" cy="585" r="17" fill="#cc7c62"/><circle cx="1391" cy="603" r="16" fill="#d59d47"/><circle cx="1363" cy="635" r="18" fill="#d77779"/>
+  <text x="1348" y="690" text-anchor="middle" class="label small">garden bed</text>
+  <!-- proposed fence route: temporarily marked, not installed -->
+  <path d="M330 666V347H1265V555" class="line" opacity=".92"/>
+  <path d="M330 666V347H1265V555" stroke="#f8e4a8" stroke-width="6" stroke-dasharray="11 13" fill="none"/>
+  <!-- gate gap -->
+  <path d="M330 666V590" class="line"/>
+  <path d="M330 518V347" class="line"/>
+  <path d="M330 518V590" stroke="#c6802c" stroke-width="5" stroke-dasharray="9 9"/>
+  <!-- flags -->
+  <g stroke="#7b5437" stroke-width="6" stroke-linecap="round">
+    <path d="M330 666v45"/><path d="M330 347v45"/><path d="M1265 347v45"/><path d="M1265 555v45"/><path d="M330 518v42"/>
+  </g>
+  <g fill="#df8a46"><path d="M331 662l37 12-37 15Z"/><path d="M331 343l37 12-37 15Z"/><path d="M1266 343l37 12-37 15Z"/><path d="M1266 551l37 12-37 15Z"/></g>
+  <!-- tape on the top straight run -->
+  <path d="M380 304H1205" class="measure"/>
+  <path d="M380 287v34M1205 287v34" class="thin"/>
+  <rect x="640" y="260" width="320" height="58" rx="29" fill="#fff8ea" stroke="#c6802c" stroke-width="3"/>
+  <text x="800" y="299" text-anchor="middle" class="label small">measure this straight side</text>
+  <!-- callout cards -->
+  <g filter="url(#shadow)">
+    <rect x="150" y="250" width="290" height="92" rx="18" fill="#fffdf8"/>
+    <rect x="1120" y="225" width="300" height="92" rx="18" fill="#fffdf8"/>
+    <rect x="118" y="715" width="335" height="92" rx="18" fill="#fffdf8"/>
+  </g>
+  <path d="M440 296H330" class="thin"/><text x="174" y="288" class="label small">1. Mark the corner</text><text x="174" y="319" class="label note">with a removable flag</text>
+  <path d="M1180 317L1265 347" class="thin"/><text x="1148" y="260" class="label small">2. Start a new line</text><text x="1148" y="291" class="label note">every time the fence turns</text>
+  <path d="M405 715L330 554" class="thin"/><text x="142" y="753" class="label small">3. Mark the gate opening</text><text x="142" y="784" class="label note">before you count materials</text>
+  <text x="800" y="850" text-anchor="middle" class="label note">Temporary flags and string help you plan; they are not installed fence posts.</text>
+</svg>

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Manrope, Unna } from "next/font/google";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { getSiteOrigin } from "@/lib/siteUrl";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -9,18 +10,30 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const unna = Unna({
+  variable: "--font-unna",
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
+const siteOrigin = getSiteOrigin();
+
 export const metadata: Metadata = {
+  ...(siteOrigin ? { metadataBase: new URL(siteOrigin) } : {}),
   title: {
     default: "Fence Planner & Material Calculator | Free",
     template: "%s | Fence Planner",
   },
   description:
     "Draw your fence layout, see the finished look, and get a clear material estimate. Free forever — no account required.",
+  icons: {
+    icon: [
+      { url: "/brand/fence-planner-logo.png", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
@@ -31,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${manrope.variable} ${unna.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <SiteHeader />

@@ -1,0 +1,1617 @@
+# Fence Planner — Complete Guide Articles
+
+Compiled for external content review / AdSense quality sanity check.
+
+- Generated: 2026-07-17
+- Guide count: 20
+- Purpose: capture full article text only (no UI chrome)
+
+---
+
+## Table of contents
+
+1. [How to Measure for a New Fence](#how-to-measure-for-a-new-fence)
+2. [How to Calculate Fence Panels and Posts](#how-to-calculate-fence-panels-and-posts)
+3. [Fence Post Spacing Explained](#fence-post-spacing-explained)
+4. [How Much Concrete Does Each Fence Post Need?](#how-much-concrete-for-fence-posts)
+5. [How to Plan Fence Corners and End Posts](#plan-fence-corners-and-end-posts)
+6. [How to Measure and Plan a Fence Gate](#measure-and-plan-a-fence-gate)
+7. [Wood Panels vs Individual Pickets](#wood-panels-vs-individual-pickets)
+8. [Six-Foot vs Eight-Foot Fence Sections](#six-foot-vs-eight-foot-fence-sections)
+9. [How to Handle an Uneven Final Fence Section](#handle-uneven-final-fence-section)
+10. [How to Plan a Fence on Sloped Ground](#plan-fence-on-sloped-ground)
+11. [Privacy Fence Materials Checklist](#privacy-fence-materials-checklist)
+12. [Chain-Link Fence Materials Checklist](#chain-link-fence-materials-checklist)
+13. [Fence Installation Order](#fence-installation-order)
+14. [Common Fence-Planning Mistakes](#common-fence-planning-mistakes)
+15. [Fence Permit and Property-Line Checklist](#fence-permit-and-property-line-checklist)
+16. [How to Mark Underground Utilities Before Digging](#mark-underground-utilities-before-digging)
+17. [Fence Project Shopping List](#fence-project-shopping-list)
+18. [Fence Post Depth and Frost Considerations](#fence-post-depth-and-frost)
+19. [How to Estimate Fence Waste](#how-to-estimate-fence-waste)
+20. [How to Plan a Fence Around a House or Existing Structure](#plan-fence-around-house-or-structure)
+
+---
+
+# 1. How to Measure for a New Fence
+
+<a id="how-to-measure-for-a-new-fence"></a>
+
+**Slug:** `how-to-measure-for-a-new-fence`  
+**Description:** A field method for measuring fence runs, corners, gates, and structure connections before you buy materials.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Most overbuying and underbuying starts with a bad measurement, not a bad calculator. If you only walk the yard once and write down a single total length, you lose the information that actually drives posts, panels, and gates: where the fence turns, where it stops, and where openings interrupt a run.
+
+This guide is a practical measuring method for DIY and contractor planning. It matches how Fence Planner thinks about a project: separate runs, shared corners, gate openings removed from fill, and structure connections treated differently from freestanding posts.
+
+> **Planning measurements are not a survey** (warn)
+>
+> Tape measurements help you estimate materials. They do not establish legal property lines. If boundaries are unclear, unresolved, or disputed, get authoritative markers or a survey before you dig.
+
+## What to bring into the yard
+
+- A 100 ft tape (or longer) plus a helper when possible
+- Measuring wheel for long straight runs if you have one
+- Stakes, flags, or chalk to mark corners and gate openings
+- Notebook or phone notes with a simple sketch
+- A way to note obstacles: AC units, downspouts, trees, grade changes
+
+If you are replacing an existing fence, do not assume the old line is correct. Measure the intended new line, then compare. Old fences often drift inside or outside the true boundary over years of repairs.
+
+## Break the fence into runs, not one total
+
+A run is one continuous straight segment between meaningful endpoints: a corner, an end, a structure connection, or a deliberate stop. Record each run separately.
+
+Why this matters: posts are shared at corners. If you measure “120 feet total” for an L-shaped fence that is really 70 ft + 50 ft, you can still get a usable total length, but you will mis-count corners, end conditions, and how leftover panel lengths fall on each side.
+
+1. Sketch the yard from above. Label sides A, B, C as needed.
+2. Walk each intended fence line and stake the start and end of every run.
+3. Measure each run along the ground where the fence will sit.
+4. Write the length next to that run on the sketch — not only in a totals column.
+5. Mark every gate opening on the run it interrupts, with clear opening width.
+
+## Corners, ends, and house connections
+
+At each joint, decide what kind of endpoint you have. This classification is more important than people expect because it changes post type, bracing, and whether a post is purchased at all.
+
+- Corner: two fence runs meet and continue in different directions
+- End: a run stops in open space and does not continue
+- Structure connection: the fence meets a house, garage, or solid wall and may use brackets instead of a freestanding post
+- Gate posts: heavier posts that frame a clear opening
+
+When two runs share a corner, count one shared post — not an end post for each run. Double-counting corners is one of the most common ways DIY lists inflate post and concrete totals.
+
+## How to measure gates the useful way
+
+Measure the clear opening you need, not the gate leaf you saw at the store. Ask: what must pass through — people, trash cans, a mower, a riding mower, a truck?
+
+- Walk gates are often planned around 3–4 ft clear opening
+- Equipment or lawn gates commonly land around 4–6 ft
+- Vehicle openings are usually double gates or a wide single, planned from vehicle width plus clearance
+- Note swing direction and whether the gate must open onto a slope, walkway, or driveway
+
+Also measure a few feet of free space on the swing side. A gate that fits the opening but hits a wall, AC pad, or steep grade is a planning failure, not an installation surprise.
+
+## Slope, curves, and “almost straight” sides
+
+Measure along the ground path the fence will follow. On noticeable slopes, ground distance is longer than a flat map distance. For material planning, ground distance is usually what you want because rails, panels, and fabric follow the install line.
+
+If a side is gently bowed, decide whether you will straighten it into one run or break it into shorter segments. Calculators and panel systems work best with straight runs. Soft curves often become a series of short straight bays in the field.
+
+### Worked example: Worked example: U-shaped backyard
+
+**Assumptions**
+
+- Three runs: left 48 ft, rear 60 ft, right 48 ft
+- One 4 ft walk gate on the left run, 8 ft from the house
+- Left and right runs connect to the house with brackets
+- You will enter lengths in Fence Planner by run, not as 156 ft total
+
+**Steps**
+
+1. Record runs as 48 / 60 / 48 instead of one 156 ft number.
+2. On the left run, note a 4 ft gate opening so fill becomes 44 ft for panels or pickets.
+3. Mark two structure connections at the house and two rear corners shared by adjacent runs.
+4. Check swing clearance toward the yard before locking gate location.
+
+**Result:** You now have a layout the planner can price in materials without guessing where corners and the gate fall.
+
+## A clean field checklist
+
+1. Confirm you are measuring the intended fence line, not an assumed property line.
+2. Sketch and label every run.
+3. Measure each run separately along the install path.
+4. Mark corners, ends, and structure connections.
+5. Record every gate clear opening and swing notes.
+6. Note obstacles and grade changes that could move a post.
+7. Enter the same run structure into Fence Planner and compare the generated posts to your sketch.
+
+> **Use the planner as a second set of eyes** (tip)
+>
+> After you enter runs and gates, look at Plan View. If a post lands on a downspout, tree root, or utility mark, move the gate or adjust a run length before you buy. Fixing layout on paper is cheaper than fixing it after concrete.
+
+## What good measurements unlock
+
+With run-by-run measurements, you can estimate panels or pickets honestly, avoid double-counting corner posts, subtract gates from fill, and shop with a list that matches the yard you walked. That is the difference between a calculator that feels “close enough” and a plan you can build from.
+
+
+---
+
+# 2. How to Calculate Fence Panels and Posts
+
+<a id="how-to-calculate-fence-panels-and-posts"></a>
+
+**Slug:** `how-to-calculate-fence-panels-and-posts`  
+**Description:** Turn measured fence runs into full panels, cut panels, and post counts without double-counting corners or forgetting gates.  
+**Reading time:** 10 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-panel-calculator  
+
+Calculating fence panels sounds like simple division. In practice it is division plus three decisions that change the answer: whether your module includes the post, how gates split a run into fill segments, and how shared corners are counted once.
+
+This guide explains the method Fence Planner uses so you can check the math by hand, understand warnings about leftover sections, and buy the right number of panels and posts.
+
+## Start with fill length, not total fence length
+
+Panels (and pickets, and chain-link fabric) fill the openings between posts. A gate is an opening, not fill. For every run:
+
+1. Take the run length.
+2. Subtract the clear width of every gate on that run.
+3. Work with the remaining fill length, which may be split into multiple segments if a gate sits in the middle.
+
+Example: a 60 ft run with a 4 ft gate in the middle is not “56 ft of panels in one piece.” It is two fill segments that must each be paneled separately. Leftover math happens per segment.
+
+## Know your module width
+
+A module is the repeating bay size that drives panel count and, for panel systems, line-post spacing.
+
+- Panel-only module: panel width + post width. With Fence Planner defaults (8 ft panel + 4 in post), the module is 100 inches.
+- Includes-post module: the stated panel width already accounts for the post in the system’s layout logic. With an 8 ft setting, the module is 96 inches.
+
+> **Match the product, not the habit** (note)
+>
+> Home-center “8 ft privacy panels” are not all framed the same way. Read whether the sold width is the board section only or the installed bay. Then set the planner’s module mode to match before you trust the count.
+
+## Full panels and cut panels
+
+For each fill segment:
+
+1. Divide segment length by module width.
+2. The whole number is full panels.
+3. Any meaningful remainder becomes one cut panel — and you still buy a full panel to cut from.
+
+A tiny leftover from rounding can be ignored in software thresholds, but a real remainder of more than about half an inch is a cut. Very short remainders (under about 2 ft) deserve a second look: moving a gate a foot or changing bay strategy can look better and waste less.
+
+### Worked example: Worked example: 80 ft straight privacy run
+
+**Assumptions**
+
+- One straight run, 80 ft (960 in), no gate
+- 8 ft panel, 4 in post, panel-only module = 100 in
+- No waste percentage applied to panels
+
+**Steps**
+
+1. 960 ÷ 100 = 9 full modules with 60 in left over.
+2. 9 full panels + 1 cut panel = 10 panels to buy.
+3. Posts: ends plus line posts on the module — shared endpoints counted once.
+
+**Result:** Buy 10 panels for an 80 ft run with these defaults. The last bay is a cut, not a mystery shortage.
+
+## How posts are counted
+
+Posts are not “one per panel.” They are a graph of endpoints and line posts:
+
+- Every freestanding end needs a post.
+- A corner shared by two runs is one post, usually stronger than a line post.
+- Gate openings typically need two gate posts.
+- A structure connection may use brackets on the building and should not be purchased as a freestanding post.
+- Line posts fall on spacing — for panel systems, that spacing follows the module.
+
+If you calculate each run in isolation and add end posts for every run, corners get bought twice. Always merge shared joints.
+
+## Panel systems vs site-built wood
+
+Preassembled panels give you a clean buy list: full panels + cut panels. Site-built privacy fences trade that simplicity for pickets, rails, and more control over gaps and board style. The post logic is similar, but fill math changes from “modules” to board coverage and rail spans.
+
+If you are undecided, enter the same layout once in Fence Planner and switch fence type. Comparing both lists on one sketch is faster than rebuilding the takeoff by hand.
+
+## Common mistakes that inflate or shrink the list
+
+- Forgetting to subtract gate openings from fill
+- Using 8 ft as the module when your product installs closer to 8 ft + post
+- Double-counting corner posts
+- Assuming leftover length magically disappears
+- Applying a waste percentage to panels after you already counted cut panels to buy
+
+> **Read the leftover warning** (tip)
+>
+> Fence Planner flags short final sections on purpose. A flagged remainder is not a software error — it is a chance to adjust layout before checkout.
+
+## A reliable hand-check
+
+1. List fill segments after removing gates.
+2. Confirm module mode and width against the product.
+3. Count full + cut panels per segment, then sum purchases.
+4. Count posts from a single joined layout, not isolated runs.
+5. Compare your hand count to the planner materials list and reconcile differences before you shop.
+
+
+---
+
+# 3. Fence Post Spacing Explained
+
+<a id="fence-post-spacing-explained"></a>
+
+**Slug:** `fence-post-spacing-explained`  
+**Description:** Why post spacing changes rails, panels, concrete, and how solid a fence feels — with practical defaults for panel, wood, and chain-link.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-post-calculator  
+
+Post spacing is the hidden setting behind almost every fence materials list. Change it by two feet and you change how many posts you dig, how much concrete you buy, how long your rails must span, and how stiff the finished fence feels in wind.
+
+This guide explains spacing as a planning decision — not a single “correct” number — and shows the defaults Fence Planner starts from so you can edit them with intent.
+
+## What “on center” actually means
+
+Spacing is usually measured on center (O.C.): from the center of one post to the center of the next. That is not the clear opening between posts. For an 8 ft O.C. layout with 4 in posts, the clear span is shorter than 8 ft by roughly half a post on each side.
+
+If you mix “clear opening” instructions from one product with “on center” habits from another, your rails or panels will not fit the holes you dig.
+
+## Typical starting points by fence type
+
+- Preassembled privacy panels: often follow an 8 ft bay. In Fence Planner’s panel-only default, line posts follow a 100 in module (8 ft panel + 4 in post).
+- Site-built wood privacy: commonly 6 ft or 8 ft O.C. depending on rail size, board weight, and wind exposure. Planner default is 8 ft; some style presets use 6 ft.
+- Chain-link: commonly around 10 ft O.C. for line posts, with stronger terminal posts at ends, corners, and gates. Planner default is 10 ft.
+
+> **Manufacturer guidance wins for vinyl and metal systems** (note)
+>
+> Engineered vinyl, aluminum, and specialty steel systems often require exact bay sizes and post types. Use the product chart first, then mirror those numbers in the planner settings.
+
+## The tradeoffs in plain language
+
+### Wider spacing
+
+- Fewer posts and fewer holes
+- Less concrete
+- Longer rails or wider panel bays
+- More flex and more demand on rail strength
+
+### Narrower spacing
+
+- More posts, more digging, more concrete
+- Shorter spans that often feel stiffer
+- Sometimes easier to handle leftovers on awkward total lengths
+- Higher material and labor cost for the same perimeter
+
+There is no universal winner. A calm, short side-yard screen can tolerate different choices than a tall privacy fence on a windy corner lot.
+
+## How spacing interacts with leftovers
+
+Total run length rarely divides evenly into your preferred bay. With panels, that creates a cut panel. With site-built wood, you can sometimes redistribute small differences across bays if your method allows. With chain-link, fabric is cut to fit, but rail and post rhythm still matter for a clean look.
+
+Before you dig every hole on a fixed grid, check where the last bay lands. Moving a gate one foot, or choosing 6 ft instead of 8 ft wood spacing, can turn an ugly leftover into a normal one.
+
+### Worked example: Same 96 ft run, two wood spacings
+
+**Assumptions**
+
+- Straight run, 96 ft, no gate
+- Site-built wood privacy
+- Compare 8 ft O.C. vs 6 ft O.C. line-post rhythm
+
+**Steps**
+
+1. At 8 ft O.C., the run divides evenly into 12 spans between ends.
+2. At 6 ft O.C., you add more line posts for the same length.
+3. Concrete bags scale with concreted post count, so narrower spacing raises both post and concrete totals.
+
+**Result:** Even spacing looks tidy either way — but the shopping list does not. Choose spacing for structure and look, then let the materials list follow.
+
+## Wind, height, and soil change the conversation
+
+Taller solid fences catch more wind. Soft soil, saturated ground, and shallow footings make wide spacing riskier. Local practice often shortens bays or deepens posts in those conditions. Treat planner defaults as editable starting points, not engineering certification.
+
+## Planning checklist
+
+1. Identify fence type and product bay rules.
+2. Set spacing (or panel module) before trusting post counts.
+3. Preview post locations on the layout.
+4. Check leftover bays and gate positions together.
+5. Edit hole depth and post size for your local conditions when estimating concrete.
+
+> **See spacing before you buy** (tip)
+>
+> In Fence Planner, post overlays exist so you can judge rhythm visually. If a line post lands on a utility mark or root flare, adjust now — spacing is a plan, not a vow.
+
+
+---
+
+# 4. How Much Concrete Does Each Fence Post Need?
+
+<a id="how-much-concrete-for-fence-posts"></a>
+
+**Slug:** `how-much-concrete-for-fence-posts`  
+**Description:** Estimate concrete per post from hole size and post displacement, then round up to whole bags without fake precision.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /concrete-for-fence-posts-calculator  
+
+Concrete is where fence estimates quietly go wrong. People multiply “one bag per post” by post count and hope for the best. Sometimes that works. Often it underbuys on deep holes or overbuys when posts displace a real volume of the hole.
+
+Fence Planner estimates concrete from geometry: cylindrical hole volume minus the buried post volume, then rounds up to whole bags. This guide shows that method so you can edit the assumptions for your soil and frost conditions.
+
+> **Estimates are not footing design** (warn)
+>
+> Hole depth, diameter, and mix requirements vary by frost line, soil, fence height, and local practice. Use this math for shopping estimates. Confirm critical installs with local guidance.
+
+## The volume formula
+
+1. Model the hole as a cylinder: π × (diameter ÷ 2)² × depth.
+2. Subtract the buried post volume. For a square post, that is post width² × buried depth.
+3. Multiply net volume by the number of posts that get concrete.
+4. Divide by bag yield and round up to whole bags.
+
+Structure-connected ends that use wall brackets are usually not concreted posts. Gate, corner, end, and line posts generally are — unless your method says otherwise.
+
+## Defaults used in Fence Planner
+
+- Hole diameter: 12 in
+- Hole depth: 36 in
+- Square post cross-section: 4 in
+- Bag yield: about 0.33 cubic feet per bag
+- Concrete waste percentage: off by default (you can enable it)
+
+With those defaults, each concreted post needs roughly 2 cubic feet of mix after subtracting the post — often landing around 7 bags per post before you adjust depth or diameter. That number should feel high if you are used to “two bags and done” folklore; deep 12 in holes simply hold more than people remember.
+
+### Worked example: Worked example: four concreted posts
+
+**Assumptions**
+
+- 12 in diameter × 36 in deep holes
+- 4×4 posts buried the full hole depth for estimate purposes
+- 0.33 cu ft bag yield
+- Four posts, no concrete waste percentage
+
+**Steps**
+
+1. Hole volume ≈ π × 6² × 36 ≈ 4,072 cu in (about 2.36 cu ft).
+2. Post volume ≈ 4 × 4 × 36 = 576 cu in (about 0.33 cu ft).
+3. Net ≈ 2.02 cu ft per post.
+4. 2.02 ÷ 0.33 ≈ 6.1 → round up to 7 bags each; 4 posts → 28 bags if you buy strictly per-post rounded, or compute total volume first then round once for a tighter buy.
+
+**Result:** Fence Planner totals volume across posts, then rounds once to whole bags — usually the smarter shopping move than rounding every post individually.
+
+## Why bag yield and rounding matter
+
+Bag labels vary. Some mixes yield differently when packed or mixed dry versus wet. Using 0.33 cu ft is a planning average, not a promise from every brand. Always skim the bag you actually buy and edit the planner yield if your product states something else.
+
+Rounding strategy matters too. Rounding every post upward overbuys. Rounding the project total once underbuys less often while staying practical. Either way, bring a cushion if holes come out oversized in rocky soil.
+
+## What changes the answer most
+
+- Deeper holes for frost or tall fences
+- Wider holes in soft soil
+- Larger posts (6×6 instead of 4×4)
+- Whether gate and corner posts use the same hole spec as line posts
+- Whether you set posts in gravel, precast, or special footings instead of bagged concrete
+
+## Practical field tips
+
+- Dig a test hole first if soil is unknown — one surprise boulder can change your afternoon.
+- Keep holes as consistent as you can; random oversizing silently eats bags.
+- Crown the concrete slightly so water drains away from the post.
+- Do not treat a web estimate as permission to ignore utility marks.
+
+> **Edit depth before you trust the bag count** (tip)
+>
+> If your area needs 42 in or 48 in holes, change depth in the concrete calculator first. Leaving a 36 in default in a deep-frost region is how “the math looked fine” becomes a mid-project store run.
+
+
+---
+
+# 5. How to Plan Fence Corners and End Posts
+
+<a id="plan-fence-corners-and-end-posts"></a>
+
+**Slug:** `plan-fence-corners-and-end-posts`  
+**Description:** Classify corners, ends, terminals, and structure connections so shared posts are counted once and braced correctly.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Corners and ends are where fence plans become real structures. Line posts mainly carry a repeating bay. Corners and ends absorb direction changes, tension, and the visual “stop” of a run. If you mis-label them, you buy the wrong posts and often the wrong hardware.
+
+This guide gives a clear classification system that matches how Fence Planner builds a post list from your layout.
+
+## A simple post vocabulary
+
+- Line post: continues a straight run between other posts
+- Corner post: joins two runs that change direction
+- End post: finishes a freestanding run that does not continue
+- Gate post: frames a gate opening; usually heavier
+- Terminal post (chain-link language): end, corner, or gate post that takes tension bands and bracing
+- Structure connection: meets a building; may use brackets instead of a purchased post
+
+## Why shared corners are counted once
+
+An L-shaped fence has two runs and one shared corner. That corner is not “the end of run A plus the end of run B.” It is one post doing both jobs. Counting two posts there over-orders lumber, concrete, and sometimes caps or finials.
+
+In Fence Planner, connected geometry shares joints automatically. If you export run lengths into a spreadsheet, you must merge shared points yourself.
+
+### Worked example: Worked example: simple L
+
+**Assumptions**
+
+- Run A = 40 ft, Run B = 30 ft
+- One shared corner, two freestanding ends
+- No gates, wood or panel system
+
+**Steps**
+
+1. Identify three special posts first: end, corner, end.
+2. Add line posts along each run by spacing or panel module.
+3. Do not add a fourth “end” at the corner.
+
+**Result:** Post takeoff starts from one corner + two ends + line posts — never four ends.
+
+## Corners need more than line-post thinking
+
+A corner takes load from two directions. Builders often choose a larger post, deeper hole, or additional bracing there — especially on tall privacy fences and chain-link tension corners. Even when the shopping list still says “post,” the field choice may differ from a mid-span line post.
+
+In chain-link systems, corners are commonly terminal posts with brace bands, tension bars, and truss rods. Planning a corner like a light line post is a classic underbuy.
+
+## Ends vs structure connections
+
+An end post stands on its own and must resist the fence stopping. A structure connection ties into something already solid. That can reduce freestanding post count, but it adds bracket hardware and careful flashing or siding details.
+
+- Leave room for downspouts, hose bibs, meters, and outdoor outlets
+- Confirm you are attaching to structure that can take the load
+- Do not assume a vinyl corner of a house is a good fastening surface without checking
+
+## Gates near corners
+
+A gate squeezed against a corner can fight swing clearance and make bracing awkward. Fence Planner warns when a gate sits very close to a run end for this reason. If you can, give gate posts a little room to be gate posts — not also the corner post unless your design intentionally combines them.
+
+## Planning checklist
+
+1. Sketch every joint and label it: corner, end, gate, or structure.
+2. Merge shared corners before totaling posts.
+3. Decide whether corners need upsizing or special bracing.
+4. Separate purchased posts from bracketed structure connections.
+5. For chain-link, translate ends/corners/gates into terminal hardware needs.
+
+> **Let the layout classify posts** (tip)
+>
+> Draw the real shape in Fence Planner instead of typing one total length. Post types fall out of geometry — that is the point of a layout-first materials list.
+
+
+---
+
+# 6. How to Measure and Plan a Fence Gate
+
+<a id="measure-and-plan-a-fence-gate"></a>
+
+**Slug:** `measure-and-plan-a-fence-gate`  
+**Description:** Choose clear opening width, post strategy, swing direction, and hardware — and keep gates out of your panel fill math.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-gate-planner  
+
+A fence gate is a small percentage of the perimeter and a large percentage of daily frustration when it is wrong. Too narrow and you fight the mower. Too wide and the leaf sags. Too close to a corner and the swing fights the brace. Planned well, a gate disappears into ordinary use.
+
+This guide covers the planning decisions Fence Planner expects: clear opening, gate posts, swing, hardware, and removing the opening from fill calculations.
+
+## Measure the clear opening you need
+
+Start with what must pass through, then add comfortable clearance. Store labels describe gate kits; your yard cares about clear opening between posts.
+
+- People and trash bins: often 36–48 in clear
+- Walk-behind mowers and wheelbarrows: often 48 in+
+- Riding mowers and small equipment: commonly 60–72 in
+- Vehicles: plan from vehicle width plus mirrors and turning path — usually a double gate or specialty opening
+
+> **Single vs double** (note)
+>
+> Wide openings are often easier as double gates. Fence Planner treats a double gate as two leaves with two hinge sets, one latch, and a drop rod or cane bolt for the inactive leaf.
+
+## Gate posts are not line posts
+
+Gate posts usually need to be heavier, better set, and perfectly aligned. A leaf that is only a little out of plumb becomes a latch that never loves you. Plan two posts per gate opening, and give them room to be dedicated gate posts when you can.
+
+Avoid pinching a gate against a corner unless the design intentionally uses a corner post as one side. Swing clearance and bracing both get harder there. The planner warns when a gate sits within about a foot of a run end for this reason.
+
+## Swing direction is a site decision
+
+- Into the yard vs toward the street or alley
+- Uphill vs downhill — gates hate fighting gravity and grade
+- Across a walkway people already use
+- Into an AC pad, hose reel, or trash staging area
+
+If Dream View or a quick cardboard mockup shows the leaf hitting something obvious, move the opening. Hardware cannot fix a bad swing plan.
+
+## Keep gates out of fill math
+
+Panels, pickets, and chain-link fabric do not fill the gate opening. Subtract clear gate width from the run before calculating fill. If the gate sits mid-run, you get two fill segments — each with its own leftover math.
+
+### Worked example: Worked example: 60 ft run with a 4 ft walk gate
+
+**Assumptions**
+
+- Straight privacy run, 60 ft
+- 4 ft clear walk gate centered on the run
+- 8 ft panel-only module (100 in)
+
+**Steps**
+
+1. Fill length = 60 − 4 = 56 ft, split into two segments around the gate.
+2. Panel each segment separately for full + cut counts.
+3. Add two gate posts plus hinges and a latch to the hardware list.
+4. Do not buy a panel for the 4 ft opening.
+
+**Result:** The gate reduces fill and adds specialty posts/hardware — it never “counts as a short panel.”
+
+## Hardware to put on the shopping list
+
+- Hinge set sized for the leaf weight
+- Latch you can operate from the ways you actually approach the gate
+- Drop rod / cane bolt for double gates
+- Optional closer, stop, or privacy screen details
+- Fasteners appropriate to post and rail materials
+
+## Planning checklist
+
+1. Define clear opening from real traffic needs.
+2. Choose single or double and note swing direction.
+3. Place the opening away from awkward corners when possible.
+4. Subtract the opening from fill before panel or fabric math.
+5. Upsize and carefully set the two gate posts.
+6. Preview clearance, then buy hinges/latch/drop rod to match.
+
+
+---
+
+# 7. Wood Panels vs Individual Pickets
+
+<a id="wood-panels-vs-individual-pickets"></a>
+
+**Slug:** `wood-panels-vs-individual-pickets`  
+**Description:** Compare preassembled panel fences with site-built picket privacy: speed, waste, customization, and how materials lists differ.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /wood-fence-calculator  
+
+“Wood privacy fence” is not one product. It is two common construction methods that produce similar-looking yards and very different shopping lists: preassembled panels set between posts, and site-built fences made from posts, rails, and individual boards or pickets.
+
+Choosing between them early prevents a materials list that fights your build method.
+
+## Preassembled panels: speed and predictability
+
+Panels arrive as units. You set posts to a module, hang or set panels, and cut the final bay. The materials story is mostly: posts by type, full panels, cut panels, concrete, gates, and hardware.
+
+- Faster for many DIY installs
+- Easier takeoffs — count modules and cuts
+- More dependent on product bay width and availability
+- Leftover length usually becomes a cut panel purchase
+- Less freedom to change board gap, rail count, or orientation without changing products
+
+## Site-built pickets: control and flexibility
+
+Site-built privacy fences let you choose board width, gaps, board-on-board coverage, horizontal vs vertical orientation, lattice tops, and rail count. The list grows: posts, rails per span, pickets or boards, fasteners, and often more cutting waste.
+
+- Better match to custom styles and awkward lengths
+- Can absorb leftovers more gradually across boards
+- More labor and more field decisions
+- Waste percentage matters more because boards get cut and rejected
+- Rail stock length and post spacing become first-class settings
+
+## How leftovers behave differently
+
+On an uneven final bay, panel systems usually buy one more full panel and cut it. Site-built systems may shorten several board spaces or adjust end details. Neither is “wrong,” but the shopping implication differs: panels want whole units; boards want coverage math plus waste.
+
+### Worked example: Same backyard, two build methods
+
+**Assumptions**
+
+- U-shaped yard with one walk gate
+- Goal: 6 ft privacy look
+- Compare panel system vs site-built vertical boards
+
+**Steps**
+
+1. Enter the same runs and gate once in Fence Planner.
+2. Generate a panel materials list: watch full vs cut panels.
+3. Switch to site-built wood and compare posts, rails, pickets, and waste.
+4. Decide based on labor time, style control, and which leftover story you prefer.
+
+**Result:** The perimeter did not change — the bill of materials did. Pick the method first, then optimize settings.
+
+## When panels are usually the better fit
+
+- You want the fastest path to a standard privacy look
+- Local stores stock a panel system you like
+- Your runs mostly fit common bay widths
+- Labor time matters more than custom board details
+
+## When site-built is usually the better fit
+
+- You want horizontal modern boards, shadowbox, board-on-board, or lattice tops
+- Runs are awkward and you want finer control of fill
+- You already have a carpenter’s workflow and cutting setup
+- Matching an existing custom fence matters more than speed
+
+> **Do not mix the takeoffs** (tip)
+>
+> A hybrid job — panels on the long back, site-built on a short decorative side — is fine in the yard. Just generate or annotate separate lists so waste rules and module settings do not bleed into each other.
+
+## Decision checklist
+
+1. Pick the finished look and board orientation.
+2. Check local product availability for panels vs boards.
+3. Compare labor time you actually have.
+4. Run both calculations on the same layout.
+5. Choose the method whose leftover and waste story you accept.
+
+
+---
+
+# 8. Six-Foot vs Eight-Foot Fence Sections
+
+<a id="six-foot-vs-eight-foot-fence-sections"></a>
+
+**Slug:** `six-foot-vs-eight-foot-fence-sections`  
+**Description:** How bay size changes post count, concrete, cut panels, and whether your total length divides cleanly.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-panel-calculator  
+
+Fence section length — the bay between posts — is one of the highest-leverage settings in a materials estimate. An 8 ft rhythm and a 6 ft rhythm can enclose the same yard and still produce noticeably different post, concrete, rail, and leftover outcomes.
+
+This guide helps you choose a bay size on purpose instead of inheriting whatever the first product aisle suggests.
+
+## What people mean by 6 ft and 8 ft sections
+
+Usually they mean the nominal bay or panel module, not fence height. Height is a separate setting. A “6 ft fence” can still be built on 8 ft bays, and an 8 ft tall specialty fence can use narrower spacing.
+
+- 8 ft sections are common for privacy panels and many wood layouts
+- 6 ft sections appear in some wood styles, windy sites, and specialty systems
+- Always confirm whether the number is on-center spacing or clear opening
+
+## What changes when bays get shorter
+
+- More line posts for the same total length
+- More holes and more concrete
+- Shorter rail spans or panel modules
+- Often a stiffer feel and sometimes easier leftover management
+- Higher material cost and more digging labor
+
+## What changes when bays get longer
+
+- Fewer posts and faster hole digging
+- Longer spans that demand straighter rails and solid panels
+- More sensitivity to wind and rail quality on tall solid fences
+- Leftovers that can look larger when the math does not divide evenly
+
+### Worked example: Worked example: 50 ft straight run
+
+**Assumptions**
+
+- No gate
+- Compare an 8 ft-style module vs a 6 ft wood spacing mindset
+- Focus on rhythm and leftover behavior, not brand SKUs
+
+**Steps**
+
+1. At an 8 ft / ~100 in panel-only module, 50 ft creates full bays plus a cut.
+2. At 6 ft O.C. wood spacing, you place more line posts and shorter spans.
+3. Concrete scales with concreted post count, so the 6 ft rhythm usually needs more bags.
+
+**Result:** Same fence line, different dig list. Choose bay size for structure and product fit, then accept the materials consequences.
+
+## Uneven totals are normal
+
+Yards are not designed in multiples of 6 or 8. Expect a cut panel or an adjusted end bay. The question is whether that remainder looks acceptable. A 7 ft leftover on an 8 ft system is ordinary. A 14 in leftover may look like a mistake even if the math is correct.
+
+Sometimes switching bay size — or moving a gate — fixes an awkward remainder more elegantly than forcing a tiny cut.
+
+> **Try both in the calculator** (tip)
+>
+> Enter one layout and toggle module width or post spacing. Compare cut-panel warnings and post totals side by side before you commit to a product aisle.
+
+## Decision checklist
+
+1. Confirm product bay rules and local stock.
+2. Consider wind, height, and soil.
+3. Check how cleanly your measured runs divide.
+4. Compare post/concrete totals for 6 vs 8.
+5. Pick the option with acceptable leftovers and labor.
+
+
+---
+
+# 9. How to Handle an Uneven Final Fence Section
+
+<a id="handle-uneven-final-fence-section"></a>
+
+**Slug:** `handle-uneven-final-fence-section`  
+**Description:** Practical ways to deal with leftover fence bays: cut panels, redistribute length, move a gate, or change spacing.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+If your fence length divides into perfect identical bays with nothing left over, enjoy the moment — it is rare. Most real yards end with a remainder. The job is not to pretend remainders do not exist. The job is to make them look intentional and buy materials accordingly.
+
+Fence Planner flags short final sections because they are where DIY projects either look professional or look patched.
+
+## What a remainder really is
+
+After you remove gate openings and divide fill by your module or spacing, leftover length is the part that does not complete another full bay. For panel systems, that usually means buying one more full panel and cutting it down. For site-built wood, it may mean a shorter end bay or redistributed board layout.
+
+## Strategy 1: Cut a panel (most common)
+
+Buy the cut panel as a full unit, trim it to the leftover width, and install it at the end or where the system prefers cuts. This is honest and predictable. Your materials list should already include that purchase.
+
+> **Cut panels still cost a full panel** (note)
+>
+> Do not subtract “half a panel” from the buy list. Stores sell whole panels. The cut is labor and scrap, not a half-price SKU.
+
+## Strategy 2: Move something before you dig
+
+If leftover length is tiny — say under about 2 ft on an 8 ft system — consider whether a small layout change helps:
+
+- Shift a gate one foot along the run
+- Nudge a return length if the yard allows
+- Start the module from the other end if aesthetics improve
+- Change module mode only if it still matches the product
+
+Moving a gate is often cheaper than living with a skinny filler bay in a highly visible spot.
+
+## Strategy 3: Redistribute when the system allows
+
+Some site-built methods can share a small shortage or surplus across several bays so no single opening looks odd. This requires care: rails and board patterns must still look consistent. It is not a free pass to ignore product limits on panel systems that need square modules.
+
+## Strategy 4: Change bay size deliberately
+
+Switching from 8 ft to 6 ft spacing (where structurally appropriate) can turn an awkward remainder into a cleaner rhythm. Recalculate posts and concrete before celebrating — you may trade a cut-panel problem for more digging.
+
+### Worked example: Worked example: ugly 16 in leftover
+
+**Assumptions**
+
+- Back run highly visible from the patio
+- 8 ft panel system producing a ~16 in final bay
+- One walk gate already planned on a side run
+
+**Steps**
+
+1. Note that 16 in will look like a filler strip beside full panels.
+2. Try shifting the side-yard gate 8–12 in and re-check the back-run remainder.
+3. If still awkward, compare a different module or a site-built end detail.
+4. Only then buy the cut panel for the remainder you accept.
+
+**Result:** Solve leftover aesthetics in the plan view first. Concrete makes bad remainders permanent.
+
+## Where to put the cut bay
+
+- Prefer less visible sides when you have a choice
+- Avoid featuring a skinny bay next to a gate people use daily
+- Keep cut edges clean and structurally supported
+- Match board direction and finish so the cut does not announce itself
+
+## Checklist
+
+1. Calculate remainders per fill segment after gates.
+2. Decide whether the leftover looks acceptable in its planned location.
+3. Try gate shifts or bay-size changes before shopping.
+4. Buy whole panels for cuts when using panel systems.
+5. Re-check the planner warning after each layout tweak.
+
+
+---
+
+# 10. How to Plan a Fence on Sloped Ground
+
+<a id="plan-fence-on-sloped-ground"></a>
+
+**Slug:** `plan-fence-on-sloped-ground`  
+**Description:** Understand stepped vs racked fences, what slope changes in a materials plan, and what a flat-run calculator can and cannot promise.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Slope turns a simple perimeter into a geometry problem. Posts get taller on the downhill side, panels either step like stairs or follow the grade, and the length you walk on the ground is not the same as a flat map measurement.
+
+Fence Planner estimates materials from run lengths and settings. It does not simulate every grade condition. This guide explains what you should decide on sloping sites so the estimate stays useful and honest.
+
+> **Know the tool’s boundary** (warn)
+>
+> Treat slope guidance here as planning literacy. For steep grades, verify product racking limits, stepped panel availability, and local install practice before you buy a full truckload.
+
+## Stepped vs racked in plain English
+
+### Stepped
+
+Each panel or section stays level. The tops form a stair-step silhouette that follows the hillside. Posts may need different exposed heights. This often looks intentional on moderate slopes and works well with panels that do not rack.
+
+### Racked (or rackable)
+
+The fence follows the slope so the top runs roughly parallel to the ground. Panels or picket assemblies must allow that parallelogram motion. Not every product racks, and many have a maximum rack angle.
+
+## What to measure on a slope
+
+- Measure along the ground path where posts will sit — that length usually drives rails, panels, and fabric.
+- Note the rise over each run if you can (approximate is fine for planning conversations).
+- Mark where grade changes abruptly; those spots often want a post.
+- Check gate locations twice — swinging a gate across a slope is a classic headache.
+
+## How slope affects materials beyond length
+
+- Post stock may need extra length for downhill exposure or stepped reveals
+- Panel choice may switch from standard to rackable or to stepped installation
+- Concrete and hole depth still follow local frost/soil needs — slope does not erase frost lines
+- Privacy height becomes uneven from a neighbor’s eye line if you are not deliberate
+
+### Worked example: Worked example: moderate side-yard slope
+
+**Assumptions**
+
+- Side run measures 42 ft along the ground
+- Noticeable but not extreme grade
+- Prefer a clean look from the patio above
+
+**Steps**
+
+1. Enter 42 ft as the run length for materials.
+2. Decide stepped vs racked based on available panels and desired silhouette.
+3. Place the gate on the flatter portion if possible.
+4. Plan longer posts or stepped reveals before shopping for “standard” post packs only.
+
+**Result:** The calculator still needs an accurate ground length — and you still need a slope strategy the product can execute.
+
+## Practical recommendations
+
+1. Walk the line and photograph the grade from the side.
+2. Choose stepped or racked before locking a panel SKU.
+3. Keep gates off the worst slope when the yard allows.
+4. Use Fence Planner for run/gate/post takeoff, then adjust post lengths for grade.
+5. Ask the supplier whether your chosen panels rack and by how much.
+
+> **Do not flatten the problem on paper** (tip)
+>
+> If you measure horizontal map distance instead of ground distance on a real slope, you can underbuy rails and panels. Measure the install path.
+
+
+---
+
+# 11. Privacy Fence Materials Checklist
+
+<a id="privacy-fence-materials-checklist"></a>
+
+**Slug:** `privacy-fence-materials-checklist`  
+**Description:** A complete shopping checklist for wood privacy fences — posts, fill, rails, concrete, gates, and hardware — organized the way a build actually happens.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /privacy-fence-calculator  
+
+A privacy fence shopping trip goes wrong when the list is a single undifferentiated pile: “posts and boards.” Group materials the way the install unfolds and you will catch missing hinges, concrete shortfalls, and fastener underbuys before the truck is loaded.
+
+Use this checklist with a Fence Planner printout. Fill prices in the store; keep quantities tied to your layout.
+
+## 1. Posts by role
+
+- Line posts for regular spacing or panel modules
+- Corner posts (often larger or better set)
+- End posts for freestanding terminations
+- Gate posts (heavier)
+- Note structure connections separately if using brackets instead of posts
+
+## 2. Infill — panels or boards
+
+- Preassembled: full panels + cut panels to buy
+- Site-built: pickets/boards sized to your style, plus waste allowance
+- Optional lattice tops, caps, or trim boards if your design includes them
+
+## 3. Rails and structural horizontals
+
+Site-built privacy usually needs multiple rails per span (Fence Planner defaults to three). Confirm rail stock length against your post spacing so you are not splicing awkwardly in visible bays.
+
+## 4. Concrete and hole materials
+
+- Bag bags from your hole size × concreted post count
+- Optional gravel for hole bottoms where you use it
+- Post tube forms only if that is your method
+
+## 5. Gates and hardware
+
+- Gate leaves or materials to build them
+- Hinge sets per leaf
+- Latches
+- Drop rods for double gates
+- Stops, cane bolts, or privacy screens as needed
+
+## 6. Fasteners and finishing
+
+- Exterior screws or nails rated for treated lumber when applicable
+- Post caps if desired
+- Stain/sealer plan — not always day-one, but decide intentionally
+- Brackets for structure connections
+
+### Worked example: How to use the checklist with the planner
+
+**Assumptions**
+
+- You already measured runs and gates
+- You chose panel or site-built wood
+
+**Steps**
+
+1. Generate the materials list in Fence Planner.
+2. Copy quantities into this checklist grouped by category.
+3. Add blank price columns for in-store totals.
+4. Verify actual product widths against your module/spacing settings before checkout.
+
+**Result:** You leave with a build-ordered list, not a vague cart of “fence stuff.”
+
+> **Print the diagram too** (tip)
+>
+> Store staff can help match a panel system much faster when they can see the layout, gate locations, and leftover notes — not only a quantity column.
+
+
+---
+
+# 12. Chain-Link Fence Materials Checklist
+
+<a id="chain-link-fence-materials-checklist"></a>
+
+**Slug:** `chain-link-fence-materials-checklist`  
+**Description:** Fabric, terminals, line posts, top rail, ties, and bracing — a checklist that matches how chain-link systems are actually sold and built.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /chain-link-fence-calculator  
+
+Chain-link shopping lists fail when wood-fence habits leak in. You are not primarily buying “panels.” You are buying fabric length, a post rhythm, top rail, and a terminal hardware kit at every place the fence starts, stops, turns, or opens.
+
+This checklist follows that logic and mirrors Fence Planner’s chain-link defaults so you can edit roll and rail lengths to match the products on the shelf.
+
+## 1. Fabric
+
+- Measure fill length after subtracting gate openings
+- Round up to whole rolls (planner default roll length is 50 ft — edit to match your product)
+- Confirm height, mesh size, and gauge before totaling rolls
+
+## 2. Posts
+
+- Line posts on spacing (planner default 10 ft O.C.)
+- Terminal posts at ends, corners, and gates
+- Do not treat terminals like light line posts — they take tension hardware
+
+## 3. Top rail and fittings
+
+- Top rail sections (planner default section length 21 ft — edit as needed)
+- Rail ends, sleeves, and loop caps as required by your system
+- Tension bars, bands, and brace bands at terminals
+- Truss rods / turnbuckles where bracing is required
+
+## 4. Ties and fasteners
+
+Fabric must be tied to rail and posts at a spacing that keeps the mesh neat. Underbuying ties is how a new fence looks tired in a month. Follow product guidance and round up.
+
+## 5. Gates
+
+- Walk or drive gate kits sized to clear opening
+- Gate posts / terminals framed for the opening
+- Latches and hinges matched to the kit
+- Remember: gate width is removed from fabric fill
+
+## 6. Concrete
+
+Most posts still need proper setting. Estimate bags from hole size and concreted post count, and deepen holes where frost or soft soil requires it.
+
+### Worked example: Worked example mindset: 150 ft perimeter
+
+**Assumptions**
+
+- Mostly straight runs with two corners and one walk gate
+- 10 ft line-post spacing
+- 50 ft fabric rolls
+
+**Steps**
+
+1. Subtract gate width from fill before roll math.
+2. Count terminals at ends, corners, and gate posts separately from line posts.
+3. Add top rail by section length with splicing allowances.
+4. Edit roll/rail settings in the calculator to the exact SKUs you buy.
+
+**Result:** A chain-link list is a system kit, not a lumber tally with wire substituted in.
+
+> **Match settings to the shelf** (tip)
+>
+> If rolls are 25 ft or rail comes in a different stock length, change those settings before trusting the buy list. Defaults are starting points.
+
+
+---
+
+# 13. Fence Installation Order
+
+<a id="fence-installation-order"></a>
+
+**Slug:** `fence-installation-order`  
+**Description:** A practical field sequence from layout and utilities through posts, rails or panels, and gates — using your printed plan as a checklist.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Good materials lists still fail when install order is chaotic. Digging line-post holes before terminals are set, hanging gates on posts that are still moving, or skipping utility marks are how projects lose days.
+
+This is a planning-level sequence — not a certification course. Use it with your Fence Planner printout and local rules.
+
+## Before any digging
+
+1. Confirm property-line and setback assumptions with whatever authority your situation requires.
+2. Check permits and HOA rules if they apply.
+3. Call your regional utility-marking service and wait for marks.
+4. Walk the printed layout against the real yard and adjust for obstacles.
+5. Stage materials so panels and posts stay clean and dry enough to use.
+
+## Layout in the field
+
+- String lines for straight runs
+- Mark every post location from the plan, then verify leftovers still look acceptable
+- Mark gate openings clearly before holes are dug
+- Re-check slope and swing clearances one last time
+
+## Set the important posts first
+
+Establish corners, ends, and gate posts (terminals on chain-link) before filling in every line post. Those control direction, tension, and openings. Line posts then follow the rhythm between them.
+
+> **Concrete cure time matters** (note)
+>
+> Hanging heavy panels or gates on green posts invites lean. Follow mix guidance and your judgment on when posts are ready for load.
+
+## Rails, panels, or fabric
+
+- Panel systems: set posts to module, then install panels and cut the planned remainder
+- Site-built wood: install rails true, then boards/pickets to your pattern
+- Chain-link: stretch fabric after terminals and bracing are correct; tie off neatly
+
+## Gates last among the big pieces
+
+Hang gates when adjacent posts are solid, plumb, and aligned. Set latch height for real users. Confirm swing does not hit grade, walls, or landscaping.
+
+## Finish and verify
+
+- Caps, trim, and cleanup
+- Check latch operation twice
+- Note any field changes on your printed plan for future repairs
+- Plan stain/sealer timing if unfinished wood was used
+
+### Worked example: A sane weekend-scale order
+
+**Assumptions**
+
+- DIY privacy fence, moderate length
+- Utilities already marked
+
+**Steps**
+
+1. Day prep: layout, mark posts, dig critical holes.
+2. Set corners/ends/gates first; allow concrete to firm.
+3. Set line posts; install rails or panels.
+4. Hang gate; final hardware and cleanup.
+
+**Result:** Sequence protects alignment. Speed without sequence creates rework.
+
+
+---
+
+# 14. Common Fence-Planning Mistakes
+
+<a id="common-fence-planning-mistakes"></a>
+
+**Slug:** `common-fence-planning-mistakes`  
+**Description:** The takeoff errors that inflate carts and underbuild fences — double-counted posts, forgotten gates, ignored remainders, and treating defaults as code.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Most fence-planning mistakes are not exotic. They are ordinary arithmetic and classification errors repeated across thousands of DIY weekends. Fixing them on paper is cheap. Fixing them after concrete is not.
+
+Here are the mistakes Fence Planner is designed to help you avoid — and how to catch them by hand.
+
+## 1. Double-counting corner posts
+
+If you estimate each run alone, every run has two ends. On an L or U shape, some of those “ends” are the same physical corner. Shared corners are one post.
+
+> **Draw first, total second** (tip)
+>
+> A joined layout prevents this automatically. Spreadsheet takeoffs need an explicit shared-joint step.
+
+## 2. Forgetting to subtract gates from fill
+
+Gates are openings. Panels, pickets, and fabric do not fill them. Forgetting subtraction overbuys fill and still leaves you short of gate hardware.
+
+## 3. Ignoring the leftover bay
+
+Remainders are normal. Pretending the last bay will “work out” is how people return to the store for an emergency panel — or live with a weird filler strip in the most visible place.
+
+## 4. Mixing module definitions
+
+Panel-only vs includes-post changes on-center spacing. Using the wrong mode makes post holes miss the panels you bought.
+
+## 5. Treating calculator defaults as building code
+
+Defaults for hole depth, spacing, and waste are starting points. Frost lines, HOA rules, manufacturer charts, and soil conditions override them. A clean materials list can still be wrong for your jurisdiction if you never edited assumptions.
+
+## 6. Planning gates against corners and slopes
+
+Gates need room to be gates. Crowding a corner or spanning a bad grade creates latch and swing problems that no hinge upgrade fully saves.
+
+## 7. Applying waste blindly to everything
+
+Waste helps for boards and rails. It can double-count if you already bought cut panels as whole units. Hardware usually should not get a percentage bump. Keep waste visible and selective.
+
+## 8. Measuring one total instead of runs
+
+A single perimeter number hides corners, structure connections, and where leftovers fall. Measure runs.
+
+### Worked example: Quick pre-checkout audit
+
+**Assumptions**
+
+- You have a materials list and a sketch
+
+**Steps**
+
+1. Count corners on the sketch and confirm the post list shares them.
+2. Confirm every gate width was removed from fill.
+3. Find every remainder and decide it is acceptable.
+4. Check module/spacing settings against the product in the cart.
+5. Edit hole depth for local frost before buying all the concrete.
+
+**Result:** Five minutes of auditing prevents the classic second trip.
+
+## Mistake checklist
+
+- Shared corners counted once
+- Gates subtracted from fill
+- Remainders acknowledged
+- Module mode matches product
+- Defaults edited for local reality
+- Gate placement has clearance
+- Waste applied only where it belongs
+- Runs recorded separately
+
+
+---
+
+# 15. Fence Permit and Property-Line Checklist
+
+<a id="fence-permit-and-property-line-checklist"></a>
+
+**Slug:** `fence-permit-and-property-line-checklist`  
+**Description:** A pre-dig checklist for boundaries, setbacks, permits, and HOA rules — without pretending a web tool can approve your project.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /about  
+
+Materials math cannot save a fence built in the wrong place. Boundary and permit mistakes create neighbor disputes, forced moves, and wasted concrete. This checklist is about slowing down before the first hole.
+
+> **This site does not look up permits by address** (warn)
+>
+> Fence Planner helps you design and estimate. It does not replace surveys, municipal research, or HOA review. Confirm requirements with the authorities that govern your property.
+
+## Property lines
+
+- Locate survey pins, plats, or other authoritative markers when available
+- Do not assume an old fence, hedge, or mow line is the legal boundary
+- If the line is unclear or contested, resolve it before digging
+- Consider neighbor communication early when the fence sits near a shared line
+
+## Setbacks and height rules
+
+Many places regulate fence height differently in front yards vs rear yards, and may require setbacks from sidewalks, alleys, or intersections for sight lines. Corner lots often have special rules.
+
+- Check maximum heights by yard location
+- Check setback requirements from public ways
+- Check whether solid vs open fencing is treated differently
+- Confirm pool barrier rules if the fence encloses a pool
+
+## Permits
+
+Some jurisdictions require permits for any fence; others exempt lower rear-yard fences and regulate only certain heights or frontages. The only safe approach is to check locally.
+
+1. Search your city/county building or zoning resources for fence rules.
+2. Call or email if the written guidance is ambiguous.
+3. Ask whether a simple sketch and height note is enough or if engineered details are required (rare for typical residential, but possible).
+4. Keep records of what you were told.
+
+## HOA and neighborhood covenants
+
+HOAs may control style, color, height, and setback even when the city does not. Approval timelines can be longer than your weekend ambition. Submit early.
+
+## Easements and special constraints
+
+- Utility easements may limit what you can build or require removable sections
+- Access easements need operable openings
+- Historic districts may add design review
+
+### Worked example: A responsible planning order
+
+**Assumptions**
+
+- Suburban lot with neighbors on both sides
+
+**Steps**
+
+1. Confirm boundary confidence level (pins vs assumptions).
+2. Check city height/setback/permit rules.
+3. Check HOA architectural rules if any.
+4. Only then lock the Fence Planner layout and buy list.
+
+**Result:** Design after constraints — not constraints after concrete.
+
+## Checklist you can copy
+
+- Boundary source identified
+- Neighbor conversation considered
+- Height rules checked for each frontage
+- Setbacks checked
+- Permit need confirmed
+- HOA approval status known
+- Easements reviewed
+- Then: measure, plan, shop, dig
+
+
+---
+
+# 16. How to Mark Underground Utilities Before Digging
+
+<a id="mark-underground-utilities-before-digging"></a>
+
+**Slug:** `mark-underground-utilities-before-digging`  
+**Description:** Why every post hole needs a utility locate first — and how to treat planner post locations as estimates that must yield to safety marks.  
+**Reading time:** 7 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+The most important fence-planning step is not aesthetic. It is not even structural. It is knowing what is underground before you put a digger in the soil. Gas, electric, communications, and water lines do not care that your panel module looked perfect on screen.
+
+This guide is a safety-first planning reminder. It is not a locate service and not clearance approval.
+
+> **Never treat a calculator as digging permission** (warn)
+>
+> Fence Planner can suggest post locations. It cannot see buried utilities. Always contact your regional utility-marking service and wait for marks before excavation.
+
+## What “call before you dig” means in practice
+
+1. Contact the locate service that covers your area (in the U.S., commonly 811).
+2. Provide accurate dig location and timing.
+3. Wait the required time for marks.
+4. Respect color codes and clearance distances around marks.
+5. Hand-dig with care near marked lines when work must proceed nearby.
+
+Private lines beyond the utility’s scope — such as some yard lighting, irrigation, or lines to a shed — may not be marked. Walk your own property knowledge and use caution where those might exist.
+
+## How this changes your fence plan
+
+If a mark lands on a planned post, move the post. Adjust spacing locally, shift a gate, or change a bay. A slightly uneven rhythm is better than a damaged line. Update the materials list if the change adds a post or alters a cut panel.
+
+## Common false assumptions
+
+- “It’s only a shallow post hole” — shallow is still enough to hit shallow lines
+- “The old fence was here” — old fences do not certify clear soil
+- “I called last year” — marks and tickets expire; get current locates for new work
+- “The planner put the post here” — software is not a sensor
+
+### Worked example: Safe workflow with Fence Planner
+
+**Assumptions**
+
+- Layout drafted and mostly finalized
+
+**Steps**
+
+1. Draft the fence and generate post locations.
+2. Request utility marks for the dig area.
+3. Walk marks against Plan View printout.
+4. Move conflicting posts and re-check leftovers/gates.
+5. Only then dig.
+
+**Result:** The plan serves the yard’s constraints — including the invisible ones.
+
+## Checklist
+
+- Locate ticket requested
+- Wait time observed
+- Marks reviewed on site
+- Private-line risks considered
+- Post layout adjusted if needed
+- Digging begins only after that
+
+
+---
+
+# 17. Fence Project Shopping List
+
+<a id="fence-project-shopping-list"></a>
+
+**Slug:** `fence-project-shopping-list`  
+**Description:** Turn a Fence Planner materials estimate into a store-ready list with grouped categories, blank prices, and product-width checks.  
+**Reading time:** 7 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-material-calculator  
+
+A materials estimate becomes useful when it survives contact with a real store aisle. That means grouping items the way you shop, leaving room for prices, and verifying that the product in your hands still matches the settings that produced the quantities.
+
+## Group the cart before you enter the store
+
+1. Posts by type (line, corner, end, gate/terminal)
+2. Infill (panels or boards/pickets/fabric)
+3. Rails or top rail
+4. Concrete
+5. Gates and hardware
+6. Fasteners, brackets, caps, miscellaneous
+
+Grouped lists prevent the classic failure mode: buying all the panels and remembering hinges in the driveway.
+
+## Bring more than quantities
+
+- Printed materials list with blank price columns
+- Layout diagram showing runs and gates
+- Notes on module width / spacing settings used
+- Hole depth assumption for concrete
+- Photos of any existing fence you are matching
+
+## Verify products against settings
+
+If the planner assumed an 8 ft panel-only module and the store’s panel system installs differently, stop and recalculate. Quantities are only as good as the product assumptions behind them.
+
+> **Recalculate in the parking lot if needed** (tip)
+>
+> It is faster to edit settings on your phone and regenerate than to force-fit the wrong bay size all weekend.
+
+## Price columns without fake live pricing
+
+Fence Planner intentionally does not invent live retailer prices. Write unit prices as you shop, multiply, and total. That keeps the tool honest and the budget yours.
+
+### Worked example: Store-trip workflow
+
+**Assumptions**
+
+- Materials list already generated
+
+**Steps**
+
+1. Print or save the list and diagram.
+2. Shop posts and concrete with hole-depth notes in hand.
+3. Confirm panel/board/fabric SKUs against settings.
+4. Add hardware last so nothing is forgotten.
+5. Re-check leftover/cut notes before checkout.
+
+**Result:** You leave with a buildable cart, not a hopeful one.
+
+## After checkout
+
+- Keep the receipt with the printed plan
+- Note any substitutions for future repairs
+- Stage materials off soil when possible
+- Confirm nothing critical was backordered before digging holes
+
+
+---
+
+# 18. Fence Post Depth and Frost Considerations
+
+<a id="fence-post-depth-and-frost"></a>
+
+**Slug:** `fence-post-depth-and-frost`  
+**Description:** Why fence post hole depth is local — frost heave, soil, wind, and height — and how to edit calculator defaults without false certainty.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /concrete-for-fence-posts-calculator  
+
+A 36-inch hole is a common starting point in planning tools. It is not a universal law. Frost depth, soil bearing, wind exposure, and fence height all change how deep and how wide posts should be set.
+
+Fence Planner’s concrete estimate starts from editable hole dimensions. This guide explains what those numbers are trying to approximate so you change them deliberately.
+
+## What frost heave does to fences
+
+In cold climates, water in soil freezes and expands. Shallow footings can move seasonally, racking gates and lifting posts. Local practice often sets posts below the frost line or uses details that resist heave. The right depth is geographic.
+
+> **Ask local sources** (note)
+>
+> Suppliers, inspectors, and experienced local installers usually know the frost expectations for your area better than a national default.
+
+## Other reasons depth and diameter change
+
+- Taller solid fences catch more wind and may need deeper or larger footings
+- Soft, sandy, or recently filled soil may need wider holes or different setting methods
+- Rocky sites may force shallower or alternate details — get advice rather than forcing fantasy depths
+- Gate and corner posts often deserve more care than mid-span line posts
+
+## How depth changes the bag count
+
+Concrete volume scales with depth and with the square of hole radius. Deepening a 12 in hole from 30 in to 48 in is not a small tweak — it is a major materials change. Edit depth in the calculator before you buy bags “from memory.”
+
+### Worked example: Planning habit that prevents underbuying
+
+**Assumptions**
+
+- You are in a region with real winter frost
+- Planner default depth is still 36 in
+
+**Steps**
+
+1. Look up or ask for local frost/post guidance.
+2. Set hole depth (and diameter if needed) in the concrete calculator.
+3. Regenerate bag counts.
+4. Keep a small cushion if holes tend to oversize in your soil.
+
+**Result:** Your bag count reflects your climate — not a generic blog number.
+
+## What this guide is not
+
+It is not engineered footing design. Unusual heights, high wind zones, retaining conditions, or poor soils may need professional guidance. When unsure, ask before you dig a hundred holes to the wrong depth.
+
+## Checklist
+
+- Local frost / depth expectation researched
+- Soil conditions considered
+- Fence height and wind considered
+- Gate/corner posts reviewed specially
+- Calculator hole settings updated
+- Bag bags regenerated
+
+
+---
+
+# 19. How to Estimate Fence Waste
+
+<a id="how-to-estimate-fence-waste"></a>
+
+**Slug:** `how-to-estimate-fence-waste`  
+**Description:** Apply waste on purpose — boards and rails often need it; cut panels and hardware usually do not — so your list stays honest.  
+**Reading time:** 8 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-calculator  
+
+Waste percentage is where fence calculators either earn trust or quietly inflate carts. Blindly adding 10% to everything feels safe and often buys the wrong extras. Selective waste — visible and editable — matches how builds actually consume material.
+
+Fence Planner defaults to a 5% waste setting and applies it only to categories where it usually belongs. This guide explains the reasoning so you can tune it.
+
+## Where waste usually belongs
+
+- Pickets and boards: cuts, defects, and sorting losses
+- Rails: end cuts and unusable shorts
+- Some wire/mesh accessories depending on product
+- Fasteners: a modest cushion after pack-size rounding
+
+## Where waste often does not belong
+
+- Preassembled panels when you already count cut panels as whole purchases
+- Gate hinges and latches counted as discrete hardware
+- Concrete when you already round bags upward from volume (optional extra cushion is a separate decision)
+
+> **Do not double-count cuts** (warn)
+>
+> If the list already includes a full panel to cut, adding another percentage on top of all panels often overbuys. Prefer category-specific waste.
+
+## How to choose a percentage
+
+5% is a reasonable planning default for many wood board jobs. Complex patterns, low-grade lumber, or inexperienced cutting may justify more. High-quality stock and simple layouts may justify less. The point is intentionality.
+
+### Worked example: Worked example: site-built privacy
+
+**Assumptions**
+
+- Vertical board privacy, rails and pickets calculated from layout
+- 5% waste on pickets and rails
+- No waste on panels category (not used)
+- Concrete waste off; bags already rounded up
+
+**Steps**
+
+1. Generate base quantities from geometry.
+2. Apply 5% to boards/rails and round according to the tool’s rules.
+3. Leave gate hardware as exact counts.
+4. Review whether your lumber grade deserves a higher board waste.
+
+**Result:** Waste protects the build without inventing a second project’s worth of extras.
+
+## Field realities that change waste
+
+- Warped boards you refuse to install
+- Matching grain/color on a highly visible frontage
+- Complex lattice or board-on-board patterns
+- Delivery damage
+
+## Checklist
+
+1. Identify which categories get waste.
+2. Pick a percentage you can explain.
+3. Avoid stacking waste on top of already-rounded cut purchases.
+4. Keep waste visible on the printed list.
+5. Adjust after you see actual lumber quality in the store or yard.
+
+
+---
+
+# 20. How to Plan a Fence Around a House or Existing Structure
+
+<a id="plan-fence-around-house-or-structure"></a>
+
+**Slug:** `plan-fence-around-house-or-structure`  
+**Description:** Plan structure connections, side-yard returns, clearances, and gates near buildings without over-buying freestanding posts.  
+**Reading time:** 9 min  
+**Updated:** 2026-07-17  
+**Related tool:** /fence-planner  
+
+Fences that meet a house are not just shorter perimeters. They introduce bracketed connections, clearance conflicts, and short return runs that change both materials and daily use. Side yards are where many DIY plans get tight — literally.
+
+This guide covers planning details Fence Planner models with structure connections and side-yard style layouts.
+
+## Structure connection vs freestanding end
+
+When a run meets a solid building, you may attach with brackets instead of setting a freestanding post against the wall. That can remove a purchased post and its concrete from the list — and add hardware and careful fastening details.
+
+- Confirm the wall can take the load (structure vs trim-only surfaces)
+- Plan flashing/siding penetrations thoughtfully
+- Leave service access to meters, hose bibs, and outlets
+- Do not bury downspouts behind a fence line you cannot maintain
+
+## Clearances that save regret
+
+- AC condensers need airflow and service space
+- Doors and gates need swing room
+- Window wells, vents, and dryer exhausts need breathing room
+- Hose reels and trash staging areas need human paths
+
+## Side-yard returns
+
+Many yards use short L-shaped returns from the house back to a side gate or rear run. Measure those short runs carefully — leftovers on a 12 ft return are just as real as leftovers on a 60 ft back line, and they sit where people walk daily.
+
+> **Start from a side-yard preset** (tip)
+>
+> Fence Planner includes side-yard oriented starting points. Begin there, then edit lengths to your tape measurements instead of rebuilding the topology from scratch.
+
+## Gates near buildings
+
+A gate beside a house is convenient and constraining at once. Watch for:
+
+- Swing into a wall or stair
+- Latch access with grocery bags in hand
+- Emergency egress expectations
+- Grade changes along the foundation line
+
+### Worked example: Worked example: side return with walk gate
+
+**Assumptions**
+
+- House connection on one end
+- 12–16 ft return to a side gate
+- AC unit nearby
+
+**Steps**
+
+1. Mark the structure connection and measure the return along the install line.
+2. Place the gate where swing clears the AC and wall.
+3. Count the house end as a structure connection if bracketed — not an extra freestanding post.
+4. Check the short-run remainder before buying a panel for a tiny filler bay.
+
+**Result:** Short runs deserve the same rigor as long ones because you see them every day.
+
+## Checklist
+
+1. Decide bracketed connection vs freestanding end at each building joint.
+2. Inventory obstacles along the foundation.
+3. Measure returns as their own runs.
+4. Place gates for swing and service access.
+5. Regenerate materials after those decisions — not before.
+
+
+---
+

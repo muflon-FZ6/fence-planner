@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { classifyPosts, pointAlongRun } from "@/domain/geometry";
 import { inchesToFeet } from "@/domain/units";
 import type { FenceFinish, FenceProject } from "@/domain/types";
@@ -56,22 +56,41 @@ export function DreamView({
   subtitle,
 }: DreamViewProps) {
   const live = useProject();
-  const [preview, setPreview] = useState<FenceProject | null>(null);
+  const snapshotKey = snapshot
+    ? `${snapshot.id}:${snapshot.updatedAt}`
+    : "live";
+  const [swingState, setSwingState] = useState<{
+    key: string;
+    map: Record<string, boolean>;
+  }>({ key: snapshotKey, map: {} });
+  const swingOverrides = useMemo(
+    () => (swingState.key === snapshotKey ? swingState.map : {}),
+    [swingState, snapshotKey],
+  );
 
-  useEffect(() => {
-    setPreview(snapshot ? structuredClone(snapshot) : null);
-  }, [snapshot]);
+  const project = useMemo(() => {
+    if (!snapshot) return live.project;
+    const base = structuredClone(snapshot);
+    return {
+      ...base,
+      gates: base.gates.map((g) => ({
+        ...g,
+        swingOpen: swingOverrides[g.id] ?? g.swingOpen,
+      })),
+    };
+  }, [snapshot, live.project, swingOverrides]);
 
-  const project = preview ?? live.project;
-  const selectedRunId = preview ? null : live.selectedRunId;
+  const selectedRunId = snapshot ? null : live.selectedRunId;
 
   function toggleGate(gateId: string) {
-    if (preview) {
-      setPreview({
-        ...preview,
-        gates: preview.gates.map((g) =>
-          g.id === gateId ? { ...g, swingOpen: !g.swingOpen } : g,
-        ),
+    if (snapshot) {
+      const current =
+        swingOverrides[gateId] ??
+        snapshot.gates.find((g) => g.id === gateId)?.swingOpen ??
+        false;
+      setSwingState({
+        key: snapshotKey,
+        map: { ...swingOverrides, [gateId]: !current },
       });
       return;
     }
@@ -136,11 +155,11 @@ export function DreamView({
       <div className="flex h-full min-h-[320px] flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)] animate-soft-rise">
         <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 text-sm">
           <span className="font-medium text-primary">
-            {preview ? "Dream preview" : "Dream View"}
+            {snapshot ? "Dream preview" : "Dream View"}
           </span>
           <span className="text-xs text-foreground/55">
             {subtitle ??
-              (preview
+              (snapshot
                 ? "Rendered from your plan — illustrative only"
                 : "Illustrative — not a survey rendering")}
           </span>

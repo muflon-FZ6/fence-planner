@@ -1,5 +1,6 @@
 "use client";
 
+import { formatMoney, resolvePricingCountry } from "@/domain/pricingPrefs";
 import { formatLength } from "@/domain/units";
 import { useProject } from "@/state/projectStore";
 
@@ -7,17 +8,36 @@ import { useProject } from "@/state/projectStore";
  * Print-only shopping list. Visible when body has class `print-shopping-list`.
  */
 export function ShoppingListPrint() {
-  const { project, materials } = useProject();
+  const { project, materials, priceEstimate } = useProject();
   const date = new Date().toLocaleDateString();
+  const country = resolvePricingCountry(project);
+  const countryLabel = country === "CA" ? "Canada" : "United States";
+  const pricedById = new Map(
+    priceEstimate.lines.map((l) => [l.materialLineId, l]),
+  );
 
   return (
-    <div className="shopping-list-print print-only mx-auto max-w-[8.5in] bg-white p-6 text-black">
+    <div
+      className="shopping-list-print print-only mx-auto max-w-[8.5in] bg-white p-6 text-black"
+      aria-hidden="true"
+    >
       <header className="border-b border-black pb-3">
         <h1 className="font-display text-2xl">Shopping list</h1>
         <p className="text-sm">
           {project.name || "Fence plan"} · {date} ·{" "}
           {formatLength(materials.totalFenceLength, project.unitSystem)} fence ·{" "}
           {materials.posts.total} posts
+        </p>
+        <p className="mt-1 text-sm">
+          Est. materials ({countryLabel}, {priceEstimate.currency}):{" "}
+          {formatMoney(priceEstimate.materialsLow, priceEstimate.currency)} –{" "}
+          {formatMoney(priceEstimate.materialsHigh, priceEstimate.currency)}{" "}
+          (typical{" "}
+          {formatMoney(
+            priceEstimate.materialsTypical,
+            priceEstimate.currency,
+          )}
+          )
         </p>
       </header>
 
@@ -30,30 +50,38 @@ export function ShoppingListPrint() {
             </th>
             <th className="border border-black/40 px-2 py-1.5 text-right">Qty</th>
             <th className="border border-black/40 px-2 py-1.5 text-right">
-              Price
+              Est. line
             </th>
           </tr>
         </thead>
         <tbody>
-          {materials.lines.map((line) => (
-            <tr key={line.id}>
-              <td className="border border-black/40 px-2 py-1.5 align-top">
-                <div className="font-medium">{line.label}</div>
-                {line.note && (
-                  <div className="mt-0.5 text-xs text-black/65">{line.note}</div>
-                )}
-              </td>
-              <td className="border border-black/40 px-2 py-1.5 align-top">
-                {line.spec ?? "—"}
-              </td>
-              <td className="border border-black/40 px-2 py-1.5 text-right align-top tabular-nums">
-                {line.quantity} {line.unit}
-              </td>
-              <td className="border border-black/40 px-2 py-1.5 text-right align-top">
-                ________
-              </td>
-            </tr>
-          ))}
+          {materials.lines.map((line) => {
+            const priced = pricedById.get(line.id);
+            return (
+              <tr key={line.id}>
+                <td className="border border-black/40 px-2 py-1.5 align-top">
+                  <div className="font-medium">{line.label}</div>
+                  {line.note && (
+                    <div className="mt-0.5 text-xs text-black/65">{line.note}</div>
+                  )}
+                </td>
+                <td className="border border-black/40 px-2 py-1.5 align-top">
+                  {line.spec ?? "—"}
+                </td>
+                <td className="border border-black/40 px-2 py-1.5 text-right align-top tabular-nums">
+                  {line.quantity} {line.unit}
+                </td>
+                <td className="border border-black/40 px-2 py-1.5 text-right align-top tabular-nums">
+                  {priced
+                    ? formatMoney(
+                        priced.lineCostTypical,
+                        priceEstimate.currency,
+                      )
+                    : "—"}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
@@ -69,8 +97,7 @@ export function ShoppingListPrint() {
       )}
 
       <p className="mt-6 text-[11px] text-black/55">
-        Illustrative estimate from Fence Planner — confirm sizes, treatment, and
-        quantities at the store. Not a structural design.
+        {priceEstimate.disclaimer}
       </p>
     </div>
   );

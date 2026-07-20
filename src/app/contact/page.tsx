@@ -12,7 +12,11 @@ export default function ContactPage() {
       <p className="mt-4 text-foreground/75">
         Questions about the tool, content corrections, or partnership inquiries:
       </p>
-      <p className="mt-4 font-semibold">hello@adoublem.example</p>
+      <p className="mt-4 font-semibold">
+        <a href="mailto:hello@doublem.ca" className="text-primary hover:underline">
+          hello@doublem.ca
+        </a>
+      </p>
       <p className="mt-6 text-sm text-foreground/65">
         We do not provide contractor quotes, permit approvals, or site-specific
         engineering advice through this form.

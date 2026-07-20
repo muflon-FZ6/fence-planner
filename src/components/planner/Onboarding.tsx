@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { IntentIllustration } from "@/components/planner/IntentIllustration";
 import { projectFromIntent } from "@/domain/presets";
 import type { ProjectIntent } from "@/domain/types";
@@ -70,23 +69,19 @@ export function Onboarding({
   onDone: () => void;
   onQuick: () => void;
 }) {
-  const { project, setName, replaceWith } = useProject();
-  const [nameDraft, setNameDraft] = useState(
-    project.name?.trim() ? project.name : "My Fence Plan",
-  );
+  const { project, replaceWith } = useProject();
 
   function startScenario(intent: ProjectIntent) {
     track("start_project", { intent });
 
     if (intent === "calculate") {
-      setName(nameDraft.trim() || "Material estimate");
       onQuick();
       return;
     }
 
     const next = projectFromIntent(intent, {
       unitSystem: project.unitSystem,
-      name: nameDraft.trim() || undefined,
+      name: project.name?.trim() || undefined,
     });
     replaceWith(next);
     track("choose_visual_mode", { intent, template: "intent" });
@@ -100,30 +95,10 @@ export function Onboarding({
           What are you creating?
         </h2>
         <p className="mt-1 max-w-2xl text-sm text-foreground/70">
-          Name your project, then pick a backyard scenario. Each card starts a
-          ready-made layout you can edit — posts, gates, and materials update
-          immediately.
+          Pick a backyard scenario. Each card starts a ready-made layout you can
+          edit — rename the plan anytime from the toolbar above. Posts, gates,
+          and materials update immediately.
         </p>
-
-        <label className="mt-5 block max-w-md text-sm">
-          <span className="font-semibold text-foreground/80">
-            Project name
-          </span>
-          <input
-            type="text"
-            value={nameDraft}
-            onChange={(e) => {
-              setNameDraft(e.target.value);
-              setName(e.target.value);
-            }}
-            placeholder="e.g. Backyard privacy fence"
-            className="mt-1.5 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-base shadow-sm outline-none ring-primary focus:ring-2"
-            autoComplete="off"
-          />
-          <span className="mt-1 block text-xs text-foreground/55">
-            You can rename this anytime from the planner toolbar.
-          </span>
-        </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

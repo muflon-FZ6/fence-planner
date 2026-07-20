@@ -1,17 +1,27 @@
 "use client";
 
+import { PlanDiagram } from "@/canvas/plan/PlanDiagram";
 import { classifyPosts } from "@/domain/geometry";
+import { formatMoney, resolvePricingCountry } from "@/domain/pricingPrefs";
 import { styleSummary } from "@/domain/styleDefaults";
 import { formatLength } from "@/domain/units";
 import { useProject } from "@/state/projectStore";
 
 export function PrintSheet() {
-  const { project, materials, warnings } = useProject();
+  const { project, materials, priceEstimate, warnings } = useProject();
   const posts = classifyPosts(project);
   const date = new Date().toLocaleDateString();
+  const country = resolvePricingCountry(project);
+  const countryLabel = country === "CA" ? "Canada" : "United States";
+  const pricedById = new Map(
+    priceEstimate.lines.map((l) => [l.materialLineId, l]),
+  );
 
   return (
-    <div className="print-only print-sheet mx-auto max-w-[8.5in] bg-white p-6 text-black">
+    <div
+      className="print-only print-sheet mx-auto max-w-[8.5in] bg-white p-6 text-black"
+      aria-hidden="true"
+    >
       <header className="border-b border-black pb-3">
         <h1 className="font-display text-2xl">
           {project.name || "Fence Project Plan"}
@@ -27,7 +37,7 @@ export function PrintSheet() {
           {styleSummary(project.settings, project.fenceType)} ·{" "}
           {formatLength(project.settings.fenceHeight, project.unitSystem)} high
         </p>
-        <div className="mt-2 h-20 border border-black/30 bg-neutral-100 p-3 text-sm">
+        <div className="mt-2 border border-black/30 bg-neutral-100 p-3 text-sm">
           {project.runs.length} fence lines ·{" "}
           {formatLength(materials.totalFenceLength, project.unitSystem)} total ·{" "}
           {project.gates.length} gate(s) · {posts.length} posts
@@ -36,30 +46,7 @@ export function PrintSheet() {
 
       <section className="mt-4">
         <h2 className="text-lg font-semibold">Measured plan</h2>
-        <svg
-          viewBox="0 0 400 200"
-          className="mt-2 w-full border border-black/20"
-        >
-          {project.runs.map((run) => (
-            <g key={run.id}>
-              <line
-                x1={run.start.x * 0.15 + 40}
-                y1={run.start.y * 0.15 + 40}
-                x2={run.end.x * 0.15 + 40}
-                y2={run.end.y * 0.15 + 40}
-                stroke="black"
-                strokeWidth={3}
-              />
-              <text
-                x={(run.start.x + run.end.x) * 0.075 + 40}
-                y={(run.start.y + run.end.y) * 0.075 + 35}
-                fontSize={10}
-              >
-                {formatLength(run.length, project.unitSystem)}
-              </text>
-            </g>
-          ))}
-        </svg>
+        <PlanDiagram project={project} className="mt-2" />
         <ul className="mt-2 text-sm">
           {project.runs.map((run, i) => (
             <li key={run.id}>
@@ -85,31 +72,82 @@ export function PrintSheet() {
                 Size to buy
               </th>
               <th className="border border-black/40 px-2 py-1 text-right">Qty</th>
-              <th className="border border-black/40 px-2 py-1 text-right">Price</th>
+              <th className="border border-black/40 px-2 py-1 text-right">
+                Est. unit
+              </th>
+              <th className="border border-black/40 px-2 py-1 text-right">
+                Est. line
+              </th>
             </tr>
           </thead>
           <tbody>
-            {materials.lines.map((line) => (
-              <tr key={line.id}>
-                <td className="border border-black/40 px-2 py-1 align-top">
-                  <div className="font-medium">{line.label}</div>
-                  {line.note && (
-                    <div className="text-xs text-black/60">{line.note}</div>
-                  )}
-                </td>
-                <td className="border border-black/40 px-2 py-1 align-top">
-                  {line.spec ?? "—"}
-                </td>
-                <td className="border border-black/40 px-2 py-1 text-right align-top">
-                  {line.quantity} {line.unit}
-                </td>
-                <td className="border border-black/40 px-2 py-1 text-right align-top">
-                  ________
-                </td>
-              </tr>
-            ))}
+            {materials.lines.map((line) => {
+              const priced = pricedById.get(line.id);
+              return (
+                <tr key={line.id}>
+                  <td className="border border-black/40 px-2 py-1 align-top">
+                    <div className="font-medium">{line.label}</div>
+                    {line.note && (
+                      <div className="text-xs text-black/60">{line.note}</div>
+                    )}
+                  </td>
+                  <td className="border border-black/40 px-2 py-1 align-top">
+                    {line.spec ?? "—"}
+                  </td>
+                  <td className="border border-black/40 px-2 py-1 text-right align-top">
+                    {line.quantity} {line.unit}
+                  </td>
+                  <td className="border border-black/40 px-2 py-1 text-right align-top tabular-nums">
+                    {priced
+                      ? priced.packSummary
+                        ? `${priced.packSummary} · ${formatMoney(
+                            priced.lineCostTypical,
+                            priceEstimate.currency,
+                          )}`
+                        : `${formatMoney(
+                            priced.unitPriceTypical,
+                            priceEstimate.currency,
+                          )}/${priced.priceUnit}${
+                            priced.packagesToBuy != null
+                              ? ` × ${priced.packagesToBuy}`
+                              : ""
+                          }`
+                      : "—"}
+                  </td>
+                  <td className="border border-black/40 px-2 py-1 text-right align-top tabular-nums">
+                    {priced
+                      ? formatMoney(
+                          priced.lineCostTypical,
+                          priceEstimate.currency,
+                        )
+                      : "—"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+      </section>
+
+      <section className="mt-4">
+        <h2 className="text-lg font-semibold">Estimated materials cost</h2>
+        <p className="mt-1 text-sm">
+          {countryLabel} · {priceEstimate.currency} · snapshot {priceEstimate.asOf}
+        </p>
+        <div className="mt-2 border border-black/30 bg-neutral-100 p-3 text-sm">
+          <p className="font-semibold">
+            {formatMoney(priceEstimate.materialsLow, priceEstimate.currency)} –{" "}
+            {formatMoney(priceEstimate.materialsHigh, priceEstimate.currency)}
+          </p>
+          <p className="mt-1">
+            Typical{" "}
+            {formatMoney(
+              priceEstimate.materialsTypical,
+              priceEstimate.currency,
+            )}
+          </p>
+        </div>
+        <p className="mt-2 text-xs text-black/70">{priceEstimate.disclaimer}</p>
       </section>
 
       <section className="mt-4 text-sm">

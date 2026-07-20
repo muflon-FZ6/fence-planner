@@ -51,8 +51,15 @@ export function GeometryList() {
                 Delete
               </button>
             </div>
-            <label className="mt-2 flex items-center gap-2 text-xs">
-              Length ({project.unitSystem === "imperial" ? "ft" : "m"})
+            <label className="mt-2 flex flex-col gap-1 text-xs">
+              <span className="font-medium">
+                Plan run length ({project.unitSystem === "imperial" ? "ft" : "m"})
+              </span>
+              <span className="text-[11px] leading-snug text-foreground/55">
+                Measured along the proposed fence centerline between endpoint
+                markers. Not a survey boundary or outside-to-outside installed
+                dimension.
+              </span>
               <input
                 type="number"
                 min={1}
@@ -116,7 +123,7 @@ export function GeometryList() {
                   </button>
                   <div className="mt-1 grid grid-cols-2 gap-2">
                     <label className="text-[11px]">
-                      Width
+                      Planned gate opening width
                       <input
                         type="number"
                         min={1}
@@ -135,6 +142,10 @@ export function GeometryList() {
                           });
                         }}
                       />
+                      <span className="mt-0.5 block text-[10px] leading-snug text-foreground/50">
+                        Removed from fence fill. Not leaf, kit, or finished clear
+                        passage.
+                      </span>
                     </label>
                     <label className="text-[11px]">
                       Type

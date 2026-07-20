@@ -4,7 +4,7 @@
 **Project type:** Free, ad-supported web utility  
 **Business model:** Always free to use; revenue from Google AdSense/display advertising  
 **Primary audience:** Homeowners, DIY renovators, landlords, contractors, property managers  
-**Owner/brand context:** A Double M free utility tool  
+**Owner/brand context:** DoubleM free utility tool  
 **Core promise:** Draw or enter a fence layout, place gates and corners, and receive a clear material estimate and printable project plan.
 
 ---

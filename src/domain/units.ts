@@ -76,5 +76,5 @@ export function formatSmallLength(
   return `${value.toFixed(digits)} ${unit}`;
 }
 
-/** Typical 50 lb bag yield ≈ 0.33 cubic feet. */
+/** Planning default bag yield ≈ 0.33 cubic feet — not a named product SKU. */
 export const DEFAULT_BAG_YIELD_CU_IN = 0.33 * CUBIC_INCHES_PER_CUBIC_FOOT;

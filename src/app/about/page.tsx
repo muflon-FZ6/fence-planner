@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "About Fence Planner, a free A Double M utility tool.",
+  description: "About Fence Planner, a free DoubleM utility tool.",
 };
 
 export default function AboutPage() {
@@ -10,7 +10,7 @@ export default function AboutPage() {
     <article className="mx-auto max-w-3xl px-4 py-10 md:px-6">
       <h1 className="font-display text-3xl text-primary">About Fence Planner</h1>
       <p className="mt-4 text-foreground/75">
-        Fence Planner & Material Calculator is a free A Double M utility. Draw or
+        Fence Planner & Material Calculator is a free DoubleM utility. Draw or
         enter a fence layout, preview a finished look, and print a materials
         list — no account and no paid tiers.
       </p>

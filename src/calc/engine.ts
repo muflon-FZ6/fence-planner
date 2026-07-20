@@ -29,11 +29,11 @@ import {
   totalFillLength,
   totalRunLength,
 } from "@/domain/geometry";
+import { postPricingSpecId } from "@/content/pricing/materialSpecs";
 import {
   feetToInches,
   formatLength,
   formatSmallLength,
-  inchesToFeet,
 } from "@/domain/units";
 import type {
   FenceProject,
@@ -102,6 +102,7 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
       category: "posts",
       label: `${postFace} fence posts`,
       spec: postSpecLabel(s),
+      pricingSpecId: postPricingSpecId(postFace, postLenFt),
       quantity: postBuyQty,
       unit: "ea",
       note: [
@@ -158,16 +159,37 @@ export function calculateMaterials(project: FenceProject): MaterialResult {
       highlightKeys: ["panel:full"],
     });
     for (const cut of panels.cutPanels) {
-      lines.push({
-        id: `panels_cut_${cut.runId}_${Math.round(cut.length)}`,
-        category: "panels",
-        label: "Cut panel (from stock panel)",
-        spec: `Trim to ${formatSmallLength(cut.length, units)} wide`,
-        quantity: 1,
-        unit: "ea",
-        note: "Included in panels to purchase above",
-        highlightKeys: [`run:${cut.runId}`, "panel:cut"],
-      });
+      const clearLabel = formatSmallLength(cut.clearPanelSpace, units);
+      const pitchLabel = formatSmallLength(cut.pitchRemainder, units);
+      if (cut.status === "no_usable_clear_opening") {
+        lines.push({
+          id: `panels_cut_${cut.runId}_${Math.round(cut.pitchRemainder)}`,
+          category: "panels",
+          label: "Partial bay — no usable clear opening",
+          spec: `Final pitch ${pitchLabel} O.C. · calculated clear panel space ≈ ${clearLabel}`,
+          quantity: 1,
+          unit: "ea",
+          note: "Post faces leave little or no clear panel space. Move an endpoint or gate, or revise the module — do not trim a panel into this opening. Still counted in panels to purchase above until the layout is revised.",
+          highlightKeys: [`run:${cut.runId}`, "panel:cut"],
+        });
+      } else {
+        lines.push({
+          id: `panels_cut_${cut.runId}_${Math.round(cut.pitchRemainder)}`,
+          category: "panels",
+          label:
+            cut.status === "short"
+              ? "Short clear opening (from stock panel)"
+              : "Cut panel (from stock panel)",
+          spec: `Final pitch ${pitchLabel} O.C. · calculated clear panel space ≈ ${clearLabel}`,
+          quantity: 1,
+          unit: "ea",
+          note:
+            cut.status === "short"
+              ? "Clear space is below the 24 in planning threshold. Confirm product fit or move a boundary. Clear space is between post faces before product fitting allowance — included in panels to purchase above."
+              : "Clear space is between post faces before product fitting allowance — not a guaranteed field cut width. Included in panels to purchase above.",
+          highlightKeys: [`run:${cut.runId}`, "panel:cut"],
+        });
+      }
     }
   }
 

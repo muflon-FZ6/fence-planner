@@ -98,6 +98,10 @@ export function panelSpecLabel(
   settings: FenceSettings,
   unitSystem: UnitSystem,
 ): string {
+  if (settings.moduleWidthMode === "includes_post") {
+    const pitch = formatSmallLength(settings.panelWidth, unitSystem);
+    return `Panel system for a ${pitch} repeating pitch — verify actual panel width from the product.`;
+  }
   const h = formatLength(settings.fenceHeight, unitSystem);
   const w = formatLength(settings.panelWidth, unitSystem);
   return `${h} H × ${w} W wood fence panel`;

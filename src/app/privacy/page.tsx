@@ -23,7 +23,12 @@ export default function PrivacyPage() {
         Analytics events, when present, are used to understand product usage
         without collecting unnecessary personal data.
       </p>
-      <p>Contact: hello@adoublem.example</p>
+      <p>
+        Contact:{" "}
+        <a href="mailto:hello@doublem.ca" className="text-primary hover:underline">
+          hello@doublem.ca
+        </a>
+      </p>
     </article>
   );
 }

@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CONSTRUCTION_STYLES } from "@/domain/constructionStyles";
-import { defaultSettings } from "@/domain/defaults";
+import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  CONSTRUCTION_STYLES,
+  type ConstructionStyle,
+} from "@/domain/constructionStyles";
+import { createEmptyProject, defaultSettings } from "@/domain/defaults";
+import { moduleWidth } from "@/domain/geometry";
 import {
   formatLength,
   formatSmallLength,
@@ -13,9 +18,25 @@ import type {
   ConstructionStyleId,
   FenceFinish,
   FenceSettings,
+  UnitSystem,
 } from "@/domain/types";
 import { useProject } from "@/state/projectStore";
 import { StylePreview } from "@/components/planner/StylePreview";
+
+function projectForStarter(style: ConstructionStyle) {
+  return createEmptyProject({
+    fenceType: style.fenceType,
+    stylePresetId: style.id,
+    settings: {
+      ...defaultSettings(style.fenceType),
+      ...style.settings,
+    },
+  });
+}
+
+const CU_IN_PER_CU_FT = 1728;
+const LITERS_PER_CU_IN = 0.0163871;
+const LITERS_PER_CU_FT = CU_IN_PER_CU_FT * LITERS_PER_CU_IN;
 
 const FINISHES: { id: FenceFinish; label: string; swatch: string }[] = [
   { id: "natural_cedar", label: "Natural cedar", swatch: "#b07a45" },
@@ -55,12 +76,16 @@ export function StyleStudio() {
   const s = project.settings;
   const wood = project.fenceType !== "chain_link";
   const activePreset = project.stylePresetId ?? "custom";
-
-  useEffect(() => {
-    if (!wood && (tab === "boards" || tab === "tops" || tab === "lattice")) {
-      setTab("posts");
-    }
-  }, [wood, tab]);
+  const selectedStarter = CONSTRUCTION_STYLES.find((x) => x.id === activePreset);
+  // Collapse once a starter is chosen — expand to browse/change
+  const [startersOpen, setStartersOpen] = useState(
+    () => activePreset === "custom" || !selectedStarter,
+  );
+  // Avoid setState-in-effect: derive a safe tab when chain-link hides board tabs
+  const activeTab: StyleTab =
+    !wood && (tab === "boards" || tab === "tops" || tab === "lattice")
+      ? "posts"
+      : tab;
 
   function applyPreset(id: ConstructionStyleId) {
     const style = CONSTRUCTION_STYLES.find((x) => x.id === id);
@@ -77,6 +102,7 @@ export function StyleStudio() {
     });
     if (style.fenceType === "chain_link") setTab("posts");
     else setTab("boards");
+    setStartersOpen(false);
   }
 
   function patchStyle(partial: Partial<FenceSettings>) {
@@ -95,50 +121,78 @@ export function StyleStudio() {
 
   return (
     <div className="space-y-4">
-      {/* Starters — always available */}
-      <section className="rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-soft)]">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <p className="text-sm font-semibold text-primary">Starter looks</p>
-            <p className="text-xs text-foreground/60">
-              Click any starter anytime to reset the construction look. Tweaking
-              options below marks the style as Custom.
-            </p>
+      {/* Starters — collapsed after a choice so Style stays preview-first */}
+      <section className="rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)]">
+        <button
+          type="button"
+          className="group flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition hover:bg-surface-muted/70"
+          aria-expanded={startersOpen}
+          onClick={() => setStartersOpen((o) => !o)}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            {selectedStarter && activePreset !== "custom" ? (
+              <div className="h-11 w-16 shrink-0 overflow-hidden rounded-md border border-border">
+                <StylePreview
+                  project={projectForStarter(selectedStarter)}
+                  variant="thumb"
+                />
+              </div>
+            ) : null}
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-primary">Starter look</p>
+              <p className="truncate text-xs text-foreground/65">
+                {activePreset === "custom"
+                  ? "Custom — tweaked from a starter"
+                  : (selectedStarter?.title ?? "Choose a starter")}
+              </p>
+            </div>
           </div>
-          {activePreset === "custom" && (
-            <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
-              Custom style
-            </span>
-          )}
-        </div>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          {CONSTRUCTION_STYLES.map((style) => {
-            const selected = activePreset === style.id;
-            return (
-              <button
-                key={style.id}
-                type="button"
-                onClick={() => applyPreset(style.id)}
-                className={`w-40 shrink-0 rounded-lg border px-3 py-2.5 text-left transition ${
-                  selected
-                    ? "border-primary bg-primary-soft ring-2 ring-primary/20"
-                    : "border-border bg-surface hover:border-primary/50"
-                }`}
-              >
-                <p className="text-xs font-semibold leading-snug">{style.title}</p>
-                <p className="mt-1 text-[11px] leading-snug text-foreground/55">
-                  {style.blurb}
-                </p>
-              </button>
-            );
-          })}
-        </div>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-foreground/75 transition group-hover:border-primary/40 hover:border-primary/40 hover:bg-surface-muted">
+            {startersOpen ? (
+              <ChevronUp className="size-3.5 shrink-0" aria-hidden />
+            ) : (
+              <ChevronDown className="size-3.5 shrink-0" aria-hidden />
+            )}
+            {startersOpen ? "Hide" : "Change"}
+          </span>
+        </button>
+        {startersOpen ? (
+          <div className="border-t border-border px-3 pb-3 pt-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 md:grid-cols-6">
+              {CONSTRUCTION_STYLES.map((style) => {
+                const selected = activePreset === style.id;
+                return (
+                  <button
+                    key={style.id}
+                    type="button"
+                    onClick={() => applyPreset(style.id)}
+                    className={`overflow-hidden rounded-md border text-left transition ${
+                      selected
+                        ? "border-primary ring-2 ring-primary/25"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="aspect-[4/3] w-full">
+                      <StylePreview
+                        project={projectForStarter(style)}
+                        variant="thumb"
+                      />
+                    </div>
+                    <p className="bg-surface px-1.5 py-1.5 text-xs font-semibold leading-snug text-primary sm:text-sm">
+                      {style.title}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(280px,340px)_minmax(0,1fr)]">
         {/* One section of options at a time */}
         <section className="rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-soft)]">
-          <div className="-mx-1 flex gap-1 overflow-x-auto border-b border-border px-1 pb-2">
+          <div className="flex flex-wrap gap-1.5 border-b border-border pb-2">
             {TABS.map((t) => {
               if (!wood && (t.id === "boards" || t.id === "tops" || t.id === "lattice"))
                 return null;
@@ -147,8 +201,8 @@ export function StyleStudio() {
                   key={t.id}
                   type="button"
                   onClick={() => setTab(t.id)}
-                  className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold ${
-                    tab === t.id
+                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${
+                    activeTab === t.id
                       ? "bg-primary text-white"
                       : "bg-surface-muted text-foreground/75 hover:bg-primary-soft"
                   }`}
@@ -160,7 +214,7 @@ export function StyleStudio() {
           </div>
 
           <div className="mt-3 space-y-3">
-            {tab === "boards" && wood && (
+            {activeTab === "boards" && wood && (
               <>
                 <p className="text-xs text-foreground/60">
                   How each bay is filled — patterns you can build from lumber-yard
@@ -274,7 +328,7 @@ export function StyleStudio() {
               </>
             )}
 
-            {tab === "tops" && wood && (
+            {activeTab === "tops" && wood && (
               <>
                 {s.boardPattern !== "wire_mesh" && (
                   <>
@@ -346,7 +400,7 @@ export function StyleStudio() {
               </>
             )}
 
-            {tab === "lattice" && wood && (
+            {activeTab === "lattice" && wood && (
               <>
                 {s.boardPattern === "wire_mesh" ? (
                   <p className="text-xs text-foreground/60">
@@ -395,17 +449,19 @@ export function StyleStudio() {
               </>
             )}
 
-            {tab === "posts" && (
+            {activeTab === "posts" && (
               <>
                 <p className="text-xs text-foreground/60">
                   Post size and spacing set how wide each bay is — so board
                   count and proportions in the preview match a real span.
                 </p>
 
-                <p className="text-xs font-semibold">Post size</p>
+                <p className="text-xs font-semibold">Post face used by this plan</p>
                 <p className="text-[11px] text-foreground/55">
-                  Nominal square post face. 4″ is most common; 6″ for taller or
-                  heavier fences.
+                  Enter the actual measured or manufacturer face dimension. Common
+                  nominal labels (4×4 / 6×6) are not always exactly 4 in or 6 in —
+                  use a custom value when needed. This face also drives concrete
+                  displacement.
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {POST_SIZE_IN.map((inches) => {
@@ -426,82 +482,187 @@ export function StyleStudio() {
                             : "border-border hover:border-primary/40"
                         }`}
                       >
-                        {inches}&quot; × {inches}&quot;
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <p className="text-xs font-semibold">Space between posts</p>
-                <p className="text-[11px] text-foreground/55">
-                  On-center spacing. 6 ft and 8 ft are the usual wood standards;
-                  shorter bays look stiffer and need more posts.
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(project.fenceType === "chain_link"
-                    ? CHAIN_LINK_SPACING_FT
-                    : POST_SPACING_FT
-                  ).map((ft) => {
-                    const inches = toInches(ft, "imperial");
-                    const selected =
-                      Math.abs(s.postSpacing - inches) < 0.5;
-                    const label =
-                      project.unitSystem === "imperial"
-                        ? `${ft} ft`
-                        : `${fromInches(inches, "metric").toFixed(1)} m`;
-                    return (
-                      <button
-                        key={ft}
-                        type="button"
-                        onClick={() => {
-                          const patch: Partial<FenceSettings> = {
-                            postSpacing: inches,
-                          };
-                          // Keep panel bay width aligned for panel systems
-                          if (project.fenceType === "panel") {
-                            patch.panelWidth = inches;
-                          }
-                          patchStyle(patch);
-                        }}
-                        className={`rounded-md border px-3 py-2 text-xs font-semibold ${
-                          selected
-                            ? "border-primary bg-primary-soft"
-                            : "border-border hover:border-primary/40"
-                        }`}
-                      >
-                        {label}
+                        {inches}&quot; plan face
                       </button>
                     );
                   })}
                 </div>
                 <label className="block text-xs">
-                  Custom spacing (
-                  {project.unitSystem === "imperial" ? "ft" : "m"})
+                  Custom post face (
+                  {project.unitSystem === "metric" ? "mm" : "in"})
                   <input
                     type="number"
-                    min={project.unitSystem === "imperial" ? 3 : 1}
-                    max={project.unitSystem === "imperial" ? 12 : 4}
-                    step={project.unitSystem === "imperial" ? 1 : 0.5}
+                    min={1}
+                    step={project.unitSystem === "metric" ? 1 : 0.125}
                     className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
-                    value={Number(
-                      fromInches(s.postSpacing, project.unitSystem).toFixed(
-                        project.unitSystem === "imperial" ? 0 : 1,
-                      ),
-                    )}
+                    value={
+                      project.unitSystem === "metric"
+                        ? Number(
+                            fromInches(s.postWidth, "metric", false).toFixed(0),
+                          )
+                        : s.postWidth
+                    }
                     onChange={(e) => {
-                      const inches = toInches(
-                        Number(e.target.value) || 0,
-                        project.unitSystem,
+                      const display = Number(e.target.value) || 0;
+                      const inches = Math.max(
+                        0,
+                        toInches(display, project.unitSystem, false),
                       );
-                      const patch: Partial<FenceSettings> = {
-                        postSpacing: inches,
-                      };
-                      if (project.fenceType === "panel") {
-                        patch.panelWidth = inches;
-                      }
-                      patchStyle(patch);
+                      patchStyle({
+                        postWidth: inches,
+                        postCrossSection: inches,
+                      });
                     }}
                   />
+                </label>
+
+                {project.fenceType === "panel" ? (
+                  <>
+                    <p className="text-xs font-semibold">Panel width</p>
+                    <p className="text-[11px] text-foreground/55">
+                      Entered panel size. Post spacing (pitch) is calculated from
+                      the module basis below — it is not always equal to this
+                      width.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {POST_SPACING_FT.map((ft) => {
+                        const inches = toInches(ft, "imperial");
+                        const selected = Math.abs(s.panelWidth - inches) < 0.5;
+                        const label =
+                          project.unitSystem === "imperial"
+                            ? `${ft} ft`
+                            : `${fromInches(inches, "metric").toFixed(1)} m`;
+                        return (
+                          <button
+                            key={ft}
+                            type="button"
+                            onClick={() => patchStyle({ panelWidth: inches })}
+                            className={`rounded-md border px-3 py-2 text-xs font-semibold ${
+                              selected
+                                ? "border-primary bg-primary-soft"
+                                : "border-border hover:border-primary/40"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <label className="block text-xs">
+                      Module basis
+                      <select
+                        className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+                        value={s.moduleWidthMode}
+                        onChange={(e) =>
+                          patchStyle({
+                            moduleWidthMode: e.target.value as
+                              | "panel_only"
+                              | "includes_post",
+                          })
+                        }
+                      >
+                        <option value="panel_only">
+                          Panel itself (pitch = panel + post face)
+                        </option>
+                        <option value="includes_post">
+                          Complete repeating module / pitch
+                        </option>
+                      </select>
+                    </label>
+                    <p className="rounded-md bg-[#eef7f3] px-2 py-1.5 text-[11px] text-primary">
+                      Calculated pitch:{" "}
+                      {formatSmallLength(s.panelWidth, project.unitSystem)} panel
+                      {s.moduleWidthMode === "panel_only"
+                        ? ` + ${formatSmallLength(s.postWidth, project.unitSystem)} post = ${formatSmallLength(moduleWidth(project), project.unitSystem)}`
+                        : ` = ${formatSmallLength(moduleWidth(project), project.unitSystem)} (includes post)`}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs font-semibold">
+                      On-center post spacing
+                    </p>
+                    <p className="text-[11px] text-foreground/55">
+                      {project.fenceType === "chain_link"
+                        ? "Line-post spacing on center. 10 ft is a common starting point."
+                        : "On-center spacing. 6 ft and 8 ft are the usual wood standards; shorter bays look stiffer and need more posts."}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(project.fenceType === "chain_link"
+                        ? CHAIN_LINK_SPACING_FT
+                        : POST_SPACING_FT
+                      ).map((ft) => {
+                        const inches = toInches(ft, "imperial");
+                        const selected =
+                          Math.abs(s.postSpacing - inches) < 0.5;
+                        const label =
+                          project.unitSystem === "imperial"
+                            ? `${ft} ft`
+                            : `${fromInches(inches, "metric").toFixed(1)} m`;
+                        return (
+                          <button
+                            key={ft}
+                            type="button"
+                            onClick={() =>
+                              patchStyle({ postSpacing: inches })
+                            }
+                            className={`rounded-md border px-3 py-2 text-xs font-semibold ${
+                              selected
+                                ? "border-primary bg-primary-soft"
+                                : "border-border hover:border-primary/40"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <label className="block text-xs">
+                      Custom spacing (
+                      {project.unitSystem === "imperial" ? "ft" : "m"})
+                      <input
+                        type="number"
+                        min={project.unitSystem === "imperial" ? 3 : 1}
+                        max={project.unitSystem === "imperial" ? 12 : 4}
+                        step={project.unitSystem === "imperial" ? 1 : 0.5}
+                        className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+                        value={Number(
+                          fromInches(s.postSpacing, project.unitSystem).toFixed(
+                            project.unitSystem === "imperial" ? 0 : 1,
+                          ),
+                        )}
+                        onChange={(e) => {
+                          const inches = toInches(
+                            Number(e.target.value) || 0,
+                            project.unitSystem,
+                          );
+                          patchStyle({ postSpacing: inches });
+                        }}
+                      />
+                    </label>
+                  </>
+                )}
+
+                <p className="text-xs font-semibold">Post hole & concrete</p>
+                <p className="text-[11px] text-foreground/55">
+                  Used for the shopping-list bag estimate. Lengths follow the
+                  project unit system; bag yield is a planning default — enter
+                  the yield printed on your product.
+                </p>
+                <ConcreteSettingsFields
+                  settings={s}
+                  unitSystem={project.unitSystem}
+                  onChange={updateSettings}
+                />
+                <label className="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={s.applyWasteToConcrete}
+                    onChange={(e) =>
+                      updateSettings({ applyWasteToConcrete: e.target.checked })
+                    }
+                  />
+                  Apply waste % to concrete volume (off by default)
                 </label>
 
                 <p className="text-xs font-semibold">Fence height</p>
@@ -537,15 +698,18 @@ export function StyleStudio() {
                 <p className="rounded-md bg-surface-muted px-2.5 py-2 text-[11px] text-foreground/70">
                   {formatLength(s.fenceHeight, project.unitSystem)} tall
                   {" · "}
-                  {formatSmallLength(s.postWidth, project.unitSystem, 0)} posts
+                  {formatSmallLength(s.postWidth, project.unitSystem, 0)} plan
+                  face
                   {" · "}
-                  {formatLength(s.postSpacing, project.unitSystem)} on center —
-                  preview height and bay width update to match.
+                  {project.fenceType === "panel"
+                    ? `${formatSmallLength(moduleWidth(project), project.unitSystem)} calculated pitch`
+                    : `${formatLength(s.postSpacing, project.unitSystem)} on center`}{" "}
+                  — preview height and bay width update to match.
                 </p>
               </>
             )}
 
-            {tab === "caps" && (
+            {activeTab === "caps" && (
               <>
                 <p className="text-xs text-foreground/60">
                   Decorative or light caps on top of posts.
@@ -563,7 +727,7 @@ export function StyleStudio() {
               </>
             )}
 
-            {tab === "color" && (
+            {activeTab === "color" && (
               <>
                 <p className="text-xs text-foreground/60">
                   Color chips for now — wood textures coming later.
@@ -617,7 +781,7 @@ export function StyleStudio() {
               </>
             )}
 
-            {!wood && tab === "boards" && (
+            {!wood && activeTab === "boards" && (
               <p className="text-xs text-foreground/60">
                 Chain link uses mesh construction. Switch to a wood starter look
                 above to edit boards, lattice, and tops.
@@ -660,6 +824,100 @@ function ChoiceGrid<T extends string>({
           )}
         </button>
       ))}
+    </div>
+  );
+}
+
+function ConcreteSettingsFields({
+  settings,
+  unitSystem,
+  onChange,
+}: {
+  settings: FenceSettings;
+  unitSystem: UnitSystem;
+  onChange: (partial: Partial<FenceSettings>) => void;
+}) {
+  const lengthUnit = unitSystem === "metric" ? "mm" : "in";
+  const yieldUnit = unitSystem === "metric" ? "L / bag" : "cu ft / bag";
+  const lengthStep = unitSystem === "metric" ? 1 : 0.5;
+
+  const displayLen = (inches: number) =>
+    unitSystem === "metric"
+      ? Number(fromInches(inches, "metric", false).toFixed(0))
+      : inches;
+
+  const storeLen = (display: number) =>
+    Math.max(0, toInches(display, unitSystem, false));
+
+  const displayYield =
+    unitSystem === "metric"
+      ? Number(
+          ((settings.concreteBagYield / CU_IN_PER_CU_FT) * LITERS_PER_CU_FT).toFixed(
+            1,
+          ),
+        )
+      : Number((settings.concreteBagYield / CU_IN_PER_CU_FT).toFixed(2));
+
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <label className="block text-xs">
+        Hole diameter ({lengthUnit})
+        <input
+          type="number"
+          min={0}
+          step={lengthStep}
+          className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+          value={displayLen(settings.holeDiameter)}
+          onChange={(e) =>
+            onChange({ holeDiameter: storeLen(Number(e.target.value) || 0) })
+          }
+        />
+      </label>
+      <label className="block text-xs">
+        Hole depth ({lengthUnit})
+        <input
+          type="number"
+          min={0}
+          step={unitSystem === "metric" ? 1 : 1}
+          className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+          value={displayLen(settings.holeDepth)}
+          onChange={(e) =>
+            onChange({ holeDepth: storeLen(Number(e.target.value) || 0) })
+          }
+        />
+      </label>
+      <label className="block text-xs">
+        Post face for displacement ({lengthUnit})
+        <input
+          type="number"
+          min={0}
+          step={lengthStep}
+          className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+          value={displayLen(settings.postCrossSection)}
+          onChange={(e) =>
+            onChange({
+              postCrossSection: storeLen(Number(e.target.value) || 0),
+            })
+          }
+        />
+      </label>
+      <label className="block text-xs">
+        Bag yield ({yieldUnit})
+        <input
+          type="number"
+          min={0.01}
+          step={unitSystem === "metric" ? 0.1 : 0.01}
+          className="mt-1 w-full rounded-md border border-border px-2 py-1.5"
+          value={displayYield}
+          onChange={(e) => {
+            const raw = Number(e.target.value);
+            if (!Number.isFinite(raw) || raw <= 0) return;
+            const cuFt =
+              unitSystem === "metric" ? raw / LITERS_PER_CU_FT : raw;
+            onChange({ concreteBagYield: cuFt * CU_IN_PER_CU_FT });
+          }}
+        />
+      </label>
     </div>
   );
 }

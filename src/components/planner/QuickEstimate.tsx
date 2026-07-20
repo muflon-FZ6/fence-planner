@@ -3,10 +3,15 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { calculateQuickEstimate } from "@/calc/engine";
+import { estimateProjectMaterialsCost } from "@/calc/pricing";
 import { createEmptyProject, defaultSettings } from "@/domain/defaults";
+import {
+  defaultPricingCountry,
+  formatMoney,
+} from "@/domain/pricingPrefs";
 import { quickEstimateToProject } from "@/domain/presets";
 import { feetToInches, formatLength, toInches } from "@/domain/units";
-import type { FenceType, UnitSystem } from "@/domain/types";
+import type { FenceType, PricingCountry, UnitSystem } from "@/domain/types";
 import { track } from "@/lib/analytics";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { saveCurrentProject } from "@/persistence/local";
@@ -17,6 +22,7 @@ export function QuickEstimate({
   onOpenPlanner?: (projectId: string) => void;
 }) {
   const [unitSystem, setUnitSystem] = useState<UnitSystem>("imperial");
+  const [pricingCountry, setPricingCountry] = useState<PricingCountry>("US");
   const [fenceType, setFenceType] = useState<FenceType>("panel");
   const [length, setLength] = useState(80);
   const [corners, setCorners] = useState(0);
@@ -53,6 +59,20 @@ export function QuickEstimate({
     });
   }, [project, length, unitSystem, corners, endpoints, gates, gateWidth]);
 
+  const priceEstimate = useMemo(
+    () =>
+      estimateProjectMaterialsCost({
+        lines: result.lines,
+        country: pricingCountry,
+      }),
+    [result.lines, pricingCountry],
+  );
+
+  function onUnitSystem(next: UnitSystem) {
+    setUnitSystem(next);
+    setPricingCountry(defaultPricingCountry(next));
+  }
+
   function openInPlanner() {
     track("choose_visual_mode", { from: "quick" });
     const visual = quickEstimateToProject({
@@ -63,6 +83,7 @@ export function QuickEstimate({
       name: "Quick Estimate Plan",
     });
     visual.settings = project.settings;
+    visual.pricingCountry = pricingCountry;
     // Place gates on first run
     if (gates > 0 && visual.runs[0]) {
       const run = visual.runs[0];
@@ -82,6 +103,18 @@ export function QuickEstimate({
     }
     saveCurrentProject(visual);
     onOpenPlanner?.(visual.id);
+  }
+
+  function startBlankPlan() {
+    track("choose_visual_mode", { from: "quick_blank" });
+    saveCurrentProject(
+      createEmptyProject({
+        name: "My Fence Plan",
+        fenceType,
+        unitSystem,
+        settings: project.settings,
+      }),
+    );
   }
 
   return (
@@ -108,7 +141,7 @@ export function QuickEstimate({
                 className="mt-1 w-full rounded-md border border-border px-2 py-2"
                 value={unitSystem}
                 onChange={(e) =>
-                  setUnitSystem(e.target.value as UnitSystem)
+                  onUnitSystem(e.target.value as UnitSystem)
                 }
               >
                 <option value="imperial">Imperial</option>
@@ -247,6 +280,63 @@ export function QuickEstimate({
               Fill length{" "}
               {formatLength(result.fillLength, unitSystem)} after gates
             </p>
+
+            <div className="mt-4 rounded-md border border-primary/25 bg-primary-soft/50 px-3 py-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
+                  Estimated materials
+                </p>
+                <div
+                  className="inline-flex rounded-md border border-border bg-surface p-0.5"
+                  role="group"
+                  aria-label="Estimate country"
+                >
+                  {(
+                    [
+                      ["US", "US"],
+                      ["CA", "Canada"],
+                    ] as const
+                  ).map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={pricingCountry === id}
+                      onClick={() => setPricingCountry(id)}
+                      className={`rounded px-2 py-0.5 text-[11px] font-semibold transition ${
+                        pricingCountry === id
+                          ? "bg-primary text-white"
+                          : "text-foreground/70 hover:bg-surface-muted"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="mt-1 font-display text-xl leading-snug text-primary">
+                {formatMoney(priceEstimate.materialsLow, priceEstimate.currency, {
+                  compact: true,
+                })}
+                {" – "}
+                {formatMoney(
+                  priceEstimate.materialsHigh,
+                  priceEstimate.currency,
+                  { compact: true },
+                )}
+              </p>
+              <p className="mt-0.5 text-xs text-foreground/65">
+                Typical{" "}
+                {formatMoney(
+                  priceEstimate.materialsTypical,
+                  priceEstimate.currency,
+                  { compact: true },
+                )}{" "}
+                · {priceEstimate.currency} · as of {priceEstimate.asOf}
+              </p>
+              <p className="mt-2 text-[11px] leading-relaxed text-foreground/55">
+                {priceEstimate.disclaimer}
+              </p>
+            </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -256,7 +346,8 @@ export function QuickEstimate({
                 Open in Visual Planner
               </button>
               <Link
-                href="/fence-planner"
+                href="/fence-planner?blank=1"
+                onClick={startBlankPlan}
                 className="rounded-md border border-border px-4 py-2 text-sm font-semibold"
               >
                 Start blank plan

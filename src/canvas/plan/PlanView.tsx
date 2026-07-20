@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Magnet,
+  PenLine,
+  Redo2,
+  Trash2,
+  Undo2,
+  X,
+} from "lucide-react";
 import { classifyPosts, moduleWidth, pointAlongRun } from "@/domain/geometry";
 import {
   planGridInches,
@@ -107,35 +115,50 @@ export function PlanView() {
     redo,
   ]);
 
+  /**
+   * Stable planning pad (~60×40 ft imperial). Do not re-fit/zoom when the first
+   * run is drawn — only expand if geometry grows past the pad.
+   */
   const bounds = useMemo(() => {
+    const pad = {
+      minX: -grid * 2,
+      minY: -grid * 2,
+      maxX: grid * 52,
+      maxY: grid * 36,
+    };
     const pts = project.runs.flatMap((r) => [r.start, r.end]);
-    if (!pts.length) {
-      // Empty plan: show a ~60 ft × 40 ft planning pad
-      return { minX: -grid * 2, minY: -grid * 2, maxX: grid * 52, maxY: grid * 36 };
-    }
-    const xs = pts.map((p) => p.x);
-    const ys = pts.map((p) => p.y);
-    const pad = grid * 6;
+    if (!pts.length) return pad;
+
+    const margin = grid * 6;
+    const content = {
+      minX: Math.min(...pts.map((p) => p.x)) - margin,
+      minY: Math.min(...pts.map((p) => p.y)) - margin,
+      maxX: Math.max(...pts.map((p) => p.x)) + margin,
+      maxY: Math.max(...pts.map((p) => p.y)) + margin,
+    };
     return {
-      minX: Math.min(...xs) - pad,
-      minY: Math.min(...ys) - pad,
-      maxX: Math.max(...xs) + pad,
-      maxY: Math.max(...ys) + pad,
+      minX: Math.min(pad.minX, content.minX),
+      minY: Math.min(pad.minY, content.minY),
+      maxX: Math.max(pad.maxX, content.maxX),
+      maxY: Math.max(pad.maxY, content.maxY),
     };
   }, [project.runs, grid]);
 
-  const width = Math.max(grid * 20, bounds.maxX - bounds.minX);
-  const height = Math.max(grid * 14, bounds.maxY - bounds.minY);
+  const width = bounds.maxX - bounds.minX;
+  const height = bounds.maxY - bounds.minY;
   const posts = useMemo(() => classifyPosts(project), [project]);
   const mod = moduleWidth(project);
 
+  /** Map pointer → world inches using the SVG CTM (respects viewBox letterboxing). */
   function clientToWorld(e: { clientX: number; clientY: number }): Point {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
-    const rect = svg.getBoundingClientRect();
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    const inv = ctm.inverse();
     return {
-      x: ((e.clientX - rect.left) / rect.width) * width + bounds.minX,
-      y: ((e.clientY - rect.top) / rect.height) * height + bounds.minY,
+      x: inv.a * e.clientX + inv.c * e.clientY + inv.e,
+      y: inv.b * e.clientX + inv.d * e.clientY + inv.f,
     };
   }
 
@@ -247,7 +270,7 @@ export function PlanView() {
         <div className="flex max-w-full flex-wrap items-center gap-2">
           <button
             type="button"
-            className={`rounded px-2.5 py-1 text-xs font-semibold ${
+            className={`inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-semibold ${
               mode === "drawing"
                 ? "bg-primary text-white"
                 : "bg-surface-muted text-foreground"
@@ -264,24 +287,31 @@ export function PlanView() {
               }
             }}
           >
+            {mode === "drawing" ? (
+              <X className="size-3.5 shrink-0" aria-hidden />
+            ) : (
+              <PenLine className="size-3.5 shrink-0" aria-hidden />
+            )}
             {mode === "drawing" ? "Cancel drawing" : "Add fence line"}
           </button>
           <button
             type="button"
             disabled={!canUndo}
             onClick={undo}
-            className="rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
             title="Undo (⌘Z / Ctrl+Z)"
           >
+            <Undo2 className="size-3.5 shrink-0" aria-hidden />
             Undo
           </button>
           <button
             type="button"
             disabled={!canRedo}
             onClick={redo}
-            className="rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1 text-xs font-semibold disabled:opacity-40"
             title="Redo"
           >
+            <Redo2 className="size-3.5 shrink-0" aria-hidden />
             Redo
           </button>
           <button
@@ -291,16 +321,17 @@ export function PlanView() {
               if (selectedGateId) deleteGate(selectedGateId);
               else if (selectedRunId) deleteRun(selectedRunId);
             }}
-            className="rounded border border-danger/40 bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded border border-danger/40 bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger disabled:opacity-40"
             title="Delete selected line or gate (Delete / Backspace)"
           >
+            <Trash2 className="size-3.5 shrink-0" aria-hidden />
             Delete
           </button>
           <button
             type="button"
             aria-pressed={snapEnabled}
             onClick={() => setSnapEnabled((on) => !on)}
-            className={`rounded px-2.5 py-1 text-xs font-semibold ${
+            className={`inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-semibold ${
               snapEnabled
                 ? "bg-accent-teal/15 text-accent-teal ring-1 ring-accent-teal/40"
                 : "border border-border bg-surface text-foreground/70"
@@ -311,6 +342,7 @@ export function PlanView() {
                 : "Snap off: freehand placement (press S)"
             }
           >
+            <Magnet className="size-3.5 shrink-0" aria-hidden />
             Snap {snapEnabled ? "on" : "off"}
           </button>
           <span className="text-xs text-foreground/55">

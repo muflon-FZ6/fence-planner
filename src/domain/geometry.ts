@@ -166,7 +166,12 @@ export function classifyPosts(project: FenceProject): ClassifiedPost[] {
     }
   }
 
-  // Line posts along fill segments
+  // Line posts along fill segments.
+  // Panel cut-bay rule: every purchased bay needs posts at both ends. When a
+  // remainder > 0.5 in creates a cut bay, also place a post at the last
+  // full-module boundary (e.g. 900 in on a 960 in / 100 in module run).
+  // Exact multiples keep the final boundary as the segment endpoint only.
+  const CUT_REMAINDER_EPSILON_IN = 0.5;
   const spacing =
     project.fenceType === "panel"
       ? moduleWidth(project)
@@ -175,11 +180,16 @@ export function classifyPosts(project: FenceProject): ClassifiedPost[] {
   for (const run of project.runs) {
     const segments = fillSegments(project, run);
     for (const seg of segments) {
-      if (seg.length <= 0) continue;
-      const count = Math.max(0, Math.floor(seg.length / spacing));
-      for (let i = 1; i < count; i++) {
+      if (seg.length <= 0 || spacing <= 0) continue;
+      const full = Math.max(0, Math.floor(seg.length / spacing));
+      const remainder = seg.length - full * spacing;
+      const hasCutBay = remainder > CUT_REMAINDER_EPSILON_IN;
+      // hasCutBay: place i = 1..full (includes last full-module mark)
+      // exact: place i = 1..full-1 (final mark is the endpoint)
+      const lastInternalIndex = hasCutBay ? full : full - 1;
+      for (let i = 1; i <= lastInternalIndex; i++) {
         const offset = seg.startOffset + i * spacing;
-        // Avoid placing on gate posts
+        // Avoid placing on gate posts (dedupe/promote also handles coincidence)
         if (isNearGatePost(project, run, offset)) continue;
         addPost({
           id: cryptoRandomId(),

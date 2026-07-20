@@ -1,6 +1,8 @@
 "use client";
 
+import { useId } from "react";
 import { styleSummary } from "@/domain/styleDefaults";
+import { moduleWidth } from "@/domain/geometry";
 import type { FenceFinish, FenceProject, FenceSettings } from "@/domain/types";
 import {
   formatLength,
@@ -24,15 +26,19 @@ const RAIL = "#4a3424";
 
 /**
  * Large elevation sample of one fence bay — construction inspiration.
- * Post size and on-center spacing drive bay proportions so boards read accurately.
+ * Post size and module/on-center spacing drive bay proportions so boards read accurately.
+ * `thumb` is a compact card preview (no chrome / dimension labels).
  */
 export function StylePreview({
   project: projectProp,
+  variant = "full",
 }: {
   project?: FenceProject;
+  variant?: "full" | "thumb";
 }) {
   const live = useProject();
   const project = projectProp ?? live.project;
+  const thumb = variant === "thumb";
   const { fenceType, settings } = project;
   const color = FINISH[settings.finish] ?? "#b07a45";
   const heightFt = Math.max(3, Math.round(inchesToFeet(settings.fenceHeight)));
@@ -53,7 +59,11 @@ export function StylePreview({
   const leftMargin = 36;
   const rightReserve = 56; // height label
   const usable = W - leftMargin - rightReserve;
-  const spacingIn = Math.max(36, settings.postSpacing);
+  const pitchIn =
+    fenceType === "panel"
+      ? moduleWidth(project)
+      : settings.postSpacing;
+  const spacingIn = Math.max(36, pitchIn);
   const postIn = Math.max(3, settings.postWidth);
   const clearBayIn = Math.max(24, spacingIn - postIn);
   // One inches→pixels scale for posts, boards, and bay width.
@@ -96,9 +106,176 @@ export function StylePreview({
   const boardBottomY = settings.hasPictureFrame
     ? solidBottom - frameT
     : solidBottom;
-  const spacingLabel = formatLength(settings.postSpacing, project.unitSystem);
+  const spacingLabel = formatLength(spacingIn, project.unitSystem);
   const postLabel = formatSmallLength(settings.postWidth, project.unitSystem, 0);
   const heightLabel = formatLength(settings.fenceHeight, project.unitSystem);
+
+  if (thumb) {
+    // Crop to the bay — leave a little ground, drop dimension chrome
+    const cropPad = 20;
+    const cropX = Math.max(0, originX - cropPad);
+    const cropW = Math.min(W - cropX, moduleW * fitScale + cropPad * 2);
+    const cropY = Math.max(0, topY - 28);
+    const cropH = Math.min(H - cropY, groundY - cropY + 36);
+    return (
+      <div className="flex h-full w-full items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#e8f0ea_0%,#f6f3ec_55%,#ddd5c4_100%)]">
+        <svg
+          viewBox={`${cropX} ${cropY} ${cropW} ${cropH}`}
+          className="h-full w-full"
+          role="img"
+          aria-label={summary}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <rect
+            x={cropX}
+            y={groundY}
+            width={cropW}
+            height={cropH}
+            fill="#6f9b6a"
+            opacity="0.4"
+          />
+          <line
+            x1={cropX}
+            y1={groundY}
+            x2={cropX + cropW}
+            y2={groundY}
+            stroke="#5a7d56"
+            strokeWidth="2"
+          />
+          <g transform={`translate(${originX} 0) scale(${fitScale} 1)`}>
+            <rect
+              x={left}
+              y={topY - 8}
+              width={postW}
+              height={groundY - topY + 8}
+              rx="2"
+              fill={POST}
+            />
+            <rect
+              x={right}
+              y={topY - 8}
+              width={postW}
+              height={groundY - topY + 8}
+              rx="2"
+              fill={POST}
+            />
+            <PostCap
+              x={left + postW / 2}
+              y={topY - 8}
+              kind={settings.postCap}
+              color={color}
+              scale={postW / 22}
+            />
+            <PostCap
+              x={right + postW / 2}
+              y={topY - 8}
+              kind={settings.postCap}
+              color={color}
+              scale={postW / 22}
+            />
+            {fenceType === "chain_link" ? (
+              <ChainLinkBay
+                x={bayL}
+                y={topY}
+                w={bayW}
+                h={groundY - topY}
+                color={color}
+              />
+            ) : (
+              <>
+                {hasLattice && (
+                  <Lattice
+                    x={bayL}
+                    y={topY}
+                    w={bayW}
+                    h={solidTop - topY}
+                    variant={
+                      settings.latticeTop === "none"
+                        ? "open"
+                        : settings.latticeTop
+                    }
+                    color={color}
+                  />
+                )}
+                <BoardInfill
+                  settings={settings}
+                  color={color}
+                  x={bayL}
+                  y={boardTopY}
+                  w={bayW}
+                  h={Math.max(4, boardBottomY - boardTopY)}
+                  fenceType={fenceType}
+                  pxPerInch={DETAIL_PX_PER_IN}
+                  edgeInset={settings.hasPictureFrame ? 0 : 4}
+                />
+                {settings.hasKickboard && (
+                  <rect
+                    x={bayL}
+                    y={solidBottom}
+                    width={bayW}
+                    height={kickH}
+                    fill={RAIL}
+                    stroke="rgba(0,0,0,0.2)"
+                  />
+                )}
+                {settings.hasPictureFrame && (
+                  <g>
+                    <rect
+                      x={bayL}
+                      y={solidTop}
+                      width={bayW}
+                      height={frameT}
+                      fill={RAIL}
+                    />
+                    <rect
+                      x={bayL}
+                      y={solidBottom - frameT}
+                      width={bayW}
+                      height={frameT}
+                      fill={RAIL}
+                    />
+                    <rect
+                      x={bayL}
+                      y={solidTop}
+                      width={frameT}
+                      height={solidBottom - solidTop}
+                      fill={RAIL}
+                    />
+                    <rect
+                      x={right - frameT}
+                      y={solidTop}
+                      width={frameT}
+                      height={solidBottom - solidTop}
+                      fill={RAIL}
+                    />
+                  </g>
+                )}
+                {!settings.hasPictureFrame && settings.hasTrim && (
+                  <rect
+                    x={bayL}
+                    y={boardTopY}
+                    width={bayW}
+                    height={8}
+                    fill={RAIL}
+                  />
+                )}
+                {!settings.hasPictureFrame && settings.hasCapRail && (
+                  <rect
+                    x={bayL - 4}
+                    y={solidTop}
+                    width={bayW + 8}
+                    height={12}
+                    rx="1"
+                    fill={RAIL}
+                  />
+                )}
+              </>
+            )}
+          </g>
+        </svg>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full min-h-[300px] flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-soft)] sm:min-h-[400px] lg:min-h-[520px]">
@@ -412,6 +589,7 @@ function Lattice({
   variant: "open" | "dense" | "privacy";
   color: string;
 }) {
+  const clipId = useId();
   // open = thin strips / larger openings
   // dense = closer spacing
   // privacy = thicker boards so the see-through diamonds shrink
@@ -458,10 +636,10 @@ function Lattice({
             : "rgba(255,255,255,0.15)"
         }
       />
-      <clipPath id={`latticeClip-${x}-${y}`}>
+      <clipPath id={clipId}>
         <rect x={x} y={y} width={w} height={h} />
       </clipPath>
-      <g clipPath={`url(#latticeClip-${x}-${y})`}>{lines}</g>
+      <g clipPath={`url(#${clipId})`}>{lines}</g>
       <rect
         x={x}
         y={y}
@@ -498,6 +676,7 @@ function BoardInfill({
   /** Vertical inset for boards inside the bay (0 = flush, e.g. picture frame). */
   edgeInset?: number;
 }) {
+  const hatchId = useId();
   if (h <= 4) return null;
 
   const boardY = y + edgeInset;
@@ -518,7 +697,6 @@ function BoardInfill({
   const gapPx = Math.max(0, settings.picketGap * pxPerInch);
   const pattern = settings.boardPattern;
   const layout = layoutBoardsPx(x, w, boardPx, gapPx);
-  const hatchId = `cut-hatch-${Math.round(x)}-${Math.round(w)}`;
 
   if (pattern === "wire_mesh") {
     return (

@@ -40,7 +40,7 @@
   --color-sky: var(--sky);
   --color-grass: var(--grass);
   --font-sans: var(--font-manrope);
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-unna);
 }
 
 body {
@@ -55,7 +55,7 @@ h1,
 h2,
 h3,
 .font-display {
-  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-family: var(--font-unna), ui-serif, Georgia, "Times New Roman", serif;
 }
 
 @media print {
@@ -68,26 +68,39 @@ h3,
     display: none !important;
   }
 
-  .print-only {
-    display: block !important;
-  }
-
+  .print-only,
   .print-sheet {
     display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    pointer-events: auto !important;
   }
 
   /* Full-plan print: do not include the shopping-list-only sheet */
   .shopping-list-print {
     display: none !important;
+    visibility: hidden !important;
   }
 
   /* Shopping-list-only print (BuildPanel → Print list) */
   body.print-shopping-list .print-sheet {
     display: none !important;
+    visibility: hidden !important;
   }
 
   body.print-shopping-list .shopping-list-print {
     display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    pointer-events: auto !important;
   }
 
   body.print-shopping-list .shopping-list-print table {
@@ -100,8 +113,20 @@ h3,
   }
 }
 
-.print-only {
-  display: none;
+/* Screen only — must not apply in print (same specificity would win over @media print) */
+@media screen {
+  .print-only,
+  .print-sheet,
+  .shopping-list-print {
+    display: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    pointer-events: none !important;
+  }
 }
 
 .ad-slot {

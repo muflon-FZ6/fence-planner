@@ -1,6 +1,6 @@
 # Fence Planner & Material Calculator
 
-Free, no-account web utility from **A Double M**: draw or enter a fence layout, preview a stylized Dream View, and print a materials list. Revenue model is AdSense-ready display ads outside the tool canvas.
+Free, no-account web utility from **DoubleM**: draw or enter a fence layout, preview a stylized Dream View, and print a materials list. Revenue model is AdSense-ready display ads outside the tool canvas.
 
 ## Stack
 

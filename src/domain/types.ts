@@ -55,9 +55,10 @@ export type PostType =
 export type ModuleWidthMode = "panel_only" | "includes_post";
 
 export type FenceSettings = {
-  /** Panel clear width (panel-only) or bay module width. */
+  /** Panel width as entered. Pitch depends on moduleWidthMode. */
   panelWidth: number;
   moduleWidthMode: ModuleWidthMode;
+  /** On-center spacing for wood / chain-link line posts. */
   postSpacing: number;
   postWidth: number;
   /** Square post face for volume subtraction; same as postWidth for square posts. */
@@ -167,6 +168,15 @@ export type ProjectIntent =
   | "modern"
   | "calculate";
 
+/** Materials cost estimate geography (Phase B). */
+export type PricingCountry = "US" | "CA";
+
+export type ProjectPriceOverride = {
+  unitPrice: number;
+  updatedAt: string;
+  note?: string;
+};
+
 export type FenceProject = {
   id: string;
   name?: string;
@@ -180,6 +190,10 @@ export type FenceProject = {
   joints: Joint[];
   settings: FenceSettings;
   scene: SceneContext;
+  /** US or Canada materials estimate; defaults from unit system when unset. */
+  pricingCountry?: PricingCountry;
+  /** Per shopping-list line unit-price overrides (local currency). */
+  priceOverrides?: Record<string, ProjectPriceOverride>;
   createdAt: string;
   updatedAt: string;
 };
@@ -205,6 +219,11 @@ export type MaterialLine = {
    * Shown prominently on the shopping list.
    */
   spec?: string;
+  /**
+   * Optional pricing catalog key (e.g. wood.post.pt.4x4.12.ground).
+   * When set, materials estimates use this spec instead of the line id alone.
+   */
+  pricingSpecId?: string;
   quantity: number;
   unit: string;
   note?: string;
@@ -222,9 +241,30 @@ export type PostCount = {
   total: number;
 };
 
+export type PanelCutStatus =
+  | "valid"
+  | "short"
+  | "no_usable_clear_opening";
+
+export type PanelCut = {
+  /** Center-to-center pitch remainder after full modules (inches). */
+  pitchRemainder: number;
+  /**
+   * Clear space between facing post faces for that final bay (inches).
+   * For equal square posts: pitchRemainder − postWidth.
+   * Not a guaranteed field-fit cut — product clearance still applies.
+   */
+  clearPanelSpace: number;
+  /** Validity from calculated clear space (not centerline pitch). */
+  status: PanelCutStatus;
+  runId: string;
+  /** Fill-segment start offset along the run (inches). */
+  segmentStartOffset: number;
+};
+
 export type PanelBreakdown = {
   fullPanels: number;
-  cutPanels: { length: number; runId: string }[];
+  cutPanels: PanelCut[];
   totalPanelsToBuy: number;
 };
 
