@@ -1,8 +1,8 @@
 /**
  * Site URL configuration for canonicals, sitemap, and JSON-LD.
- * Set NEXT_PUBLIC_SITE_URL in the host environment
- * (e.g. Hostinger Node.js app → https://fenceblueprint.com).
- * Do not guess a production domain in code.
+ * Prefer NEXT_PUBLIC_SITE_URL from the environment. Production builds
+ * also load `.env.production` (committed) so hosts like Hostinger that
+ * may not inject dashboard vars during `next build` still succeed.
  */
 export function getSiteOrigin(): string | undefined {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
