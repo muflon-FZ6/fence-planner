@@ -3,23 +3,22 @@ type AdSlotProps = {
   className?: string;
 };
 
-const LABELS: Record<AdSlotProps["slot"], string> = {
-  "landing-below": "Advertisement",
-  sidebar: "Advertisement",
-  "below-results": "Advertisement",
-  "guide-inline": "Advertisement",
-  footer: "Advertisement",
-};
-
-/** Reserved AdSense-safe placeholder — never place inside canvas or print. */
+/**
+ * Ad placement hook. Renders nothing until ads are explicitly enabled —
+ * labeled empty "Advertisement" placeholders violate AdSense policy.
+ * Set NEXT_PUBLIC_ADS_ENABLED=true only after real AdSense (or equivalent)
+ * units are wired in.
+ */
 export function AdSlot({ slot, className = "" }: AdSlotProps) {
+  if (process.env.NEXT_PUBLIC_ADS_ENABLED !== "true") {
+    return null;
+  }
+
   return (
     <aside
       className={`ad-slot no-print ${className}`}
       data-ad-slot={slot}
-      aria-label="Advertisement placeholder"
-    >
-      {LABELS[slot]}
-    </aside>
+      aria-label="Advertisement"
+    />
   );
 }
