@@ -22,7 +22,7 @@ const INTENT_IMAGES: Record<
     alt: "Chain-link fence along a property boundary",
   },
   gate_area: {
-    src: "/intents/gate-area.jpg",
+    src: "/intents/gate-area-v2.jpg",
     alt: "Wood fence with a wide double gate",
   },
   pool_garden: {
