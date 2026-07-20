@@ -69,7 +69,7 @@ export const fencePostSpacingExplained: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/post-spacing-96-foot-comparison.svg",
+      src: "/guides/diagrams/post-spacing-96-foot-comparison.png",
       alt: "Two matching 96-foot straight fence lines: one with eight-foot spacing and thirteen posts, the other with six-foot spacing and seventeen posts.",
       caption:
         "Compare spacing choices on the same fence line so you can see how many extra posts and holes the closer spacing adds before you buy.",

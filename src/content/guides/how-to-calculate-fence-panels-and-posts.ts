@@ -69,7 +69,7 @@ export const howToCalculateFencePanelsAndPosts: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/panel-pitch-vs-clear-space.svg",
+      src: "/guides/diagrams/panel-pitch-vs-clear-space.png",
       alt: "Side-by-side fence bays showing the distance from the middle of one post to the next compared with the clear space left for a panel between the post faces.",
       caption:
         "Use the post-to-post spacing to place posts, then check the clear space between post faces before you decide how to cut a short final panel.",

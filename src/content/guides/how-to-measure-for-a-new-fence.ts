@@ -71,7 +71,7 @@ export const howToMeasureForANewFence: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/measure-u-shaped-centerlines.svg",
+      src: "/guides/diagrams/measure-u-shaped-centerlines.png",
       alt: "Simple overhead sketch of a U-shaped yard fence with three separately measured straight sides, a gate on one side, and markers at the corners and ends.",
       caption:
         "Measure each straight side on its own, then mark the gate and every turn on your sketch before you add the lengths together.",

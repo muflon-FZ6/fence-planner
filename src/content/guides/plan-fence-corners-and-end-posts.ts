@@ -7,9 +7,9 @@ export const planFenceCornersAndEndPosts: Guide = {
   title: "How to Plan Fence Corners, Ends, and Terminal Posts",
   description:
     "Mark each turn, end, and gate before counting posts, so one shared corner does not become two accidental posts.",
-  updated: "2026-07-19",
+  updated: "2026-07-20",
   relatedTool: "/fence-planner",
-  image: "/guides/plan-fence-corners-and-end-posts.webp",
+  image: "/guides/plan-fence-corners-and-end-posts-v2.webp",
   relatedGuides: [
     "how-to-measure-for-a-new-fence",
     "measure-and-plan-a-fence-gate",
@@ -69,7 +69,7 @@ export const planFenceCornersAndEndPosts: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/fence-joint-topology.svg",
+      src: "/guides/diagrams/fence-joint-topology.png",
       alt: "Simple plan view of fence joints labeled as a middle post, a shared corner, an open end, gate posts, and a place where the fence meets a structure.",
       caption:
         "Mark every unique turn, end, and gate once on your sketch so a shared corner is not counted as two posts.",

@@ -69,7 +69,7 @@ export const howMuchConcreteForFencePosts: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/concrete-hole-volume.svg",
+      src: "/guides/diagrams/concrete-hole-volume.png",
       alt: "Cutaway of a square fence post set in a round concrete-filled hole, showing hole width, hole depth, and the concrete around the buried post.",
       caption:
         "Enter the hole size and the real post size, then use the bag yield on the product package to estimate how many bags the matching posts need.",

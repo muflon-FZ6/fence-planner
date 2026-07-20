@@ -7,9 +7,9 @@ export const measureAndPlanAFenceGate: Guide = {
   title: "How to Measure and Plan a Fence Gate",
   description:
     "Plan the clear passage first, then choose a gate product, its post opening, and a swing path that does not hit the yard.",
-  updated: "2026-07-19",
+  updated: "2026-07-20",
   relatedTool: "/fence-gate-planner",
-  image: "/guides/measure-and-plan-a-fence-gate.webp",
+  image: "/guides/measure-and-plan-a-fence-gate-v2.webp",
   relatedGuides: [
     "how-to-measure-for-a-new-fence",
     "how-to-calculate-fence-panels-and-posts",
@@ -69,7 +69,7 @@ export const measureAndPlanAFenceGate: Guide = {
     },
     {
       type: "figure",
-      src: "/guides/diagrams/gate-opening-and-swing.svg",
+      src: "/guides/diagrams/gate-opening-and-swing.png",
       alt: "Plan view of a fence gate showing the clear passage, the opening between gate posts, the swing arc, and the fence sections on both sides.",
       caption:
         "Decide what must pass through, set the post opening from the gate product, then walk the swing path and check the leftover fence on both sides.",

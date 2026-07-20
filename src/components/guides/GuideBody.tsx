@@ -138,33 +138,20 @@ function renderBlock(block: GuideBlock, key: string): ReactNode {
           </table>
         </figure>
       );
-    case "figure": {
-      const isSvg = block.src.toLowerCase().endsWith(".svg");
+    case "figure":
       return (
         <figure
           key={key}
           className="overflow-hidden rounded-xl border border-border"
         >
-          {isSvg ? (
-            // Local instructional SVGs — use native img so labels stay uncropped
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={block.src}
-              alt={block.alt}
-              width={960}
-              height={540}
-              className="h-auto w-full bg-[#faf8f4]"
-            />
-          ) : (
-            <Image
-              src={block.src}
-              alt={block.alt}
-              width={960}
-              height={540}
-              className="h-auto w-full object-contain bg-[#faf8f4]"
-              sizes="(max-width: 768px) 100vw, 768px"
-            />
-          )}
+          <Image
+            src={block.src}
+            alt={block.alt}
+            width={960}
+            height={540}
+            className="h-auto w-full object-contain bg-[#faf8f4]"
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
           <figcaption className="border-t border-border px-3 py-2 text-sm text-foreground/70">
             {block.caption}
             {block.credit ? (
@@ -175,7 +162,6 @@ function renderBlock(block: GuideBlock, key: string): ReactNode {
           </figcaption>
         </figure>
       );
-    }
     case "panel_module_explorer":
       return (
         <div key={key}>
