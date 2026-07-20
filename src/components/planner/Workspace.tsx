@@ -20,6 +20,7 @@ import { PrintSheet } from "@/components/planner/PrintSheet";
 import { ShoppingListPrint } from "@/components/planner/ShoppingListPrint";
 import { ShoppingListSheet } from "@/components/planner/ShoppingListSheet";
 import { StyleStudio } from "@/components/planner/StyleBuilder";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   createEmptyProject,
   cryptoRandomId,
@@ -59,6 +60,7 @@ export function Workspace() {
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [stage, setStage] = useState<Stage>("layout");
   const [shoppingOpen, setShoppingOpen] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const queryApplied = useRef(false);
   const shapeParam = searchParams.get("shape");
 
@@ -154,6 +156,20 @@ export function Workspace() {
   return (
     <>
       <ExampleLoader />
+      <ConfirmDialog
+        open={resetConfirmOpen}
+        title="Reset this project?"
+        description="This clears your current fence plan in this browser and starts a blank project. Undo history for this plan will be lost."
+        confirmLabel="Reset project"
+        cancelLabel="Keep my plan"
+        destructive
+        onCancel={() => setResetConfirmOpen(false)}
+        onConfirm={() => {
+          reset();
+          setOnboardingDismissed(false);
+          setResetConfirmOpen(false);
+        }}
+      />
       <ShoppingListSheet
         open={shoppingOpen}
         onClose={() => setShoppingOpen(false)}
@@ -210,10 +226,7 @@ export function Workspace() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                reset();
-                setOnboardingDismissed(false);
-              }}
+              onClick={() => setResetConfirmOpen(true)}
               className="inline-flex items-center gap-1.5 rounded border border-border px-2 py-1 text-xs font-semibold transition hover:bg-surface-muted"
             >
               <RotateCcw className="size-3.5 shrink-0" aria-hidden />

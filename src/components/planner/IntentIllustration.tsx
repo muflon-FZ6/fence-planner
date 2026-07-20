@@ -6,35 +6,35 @@ const INTENT_IMAGES: Record<
   { src: string; alt: string }
 > = {
   privacy: {
-    src: "/intents/privacy.webp",
+    src: "/intents/privacy.jpg",
     alt: "Tall wood privacy fence around a backyard",
   },
   pets: {
-    src: "/intents/pets.webp",
+    src: "/intents/pets.jpg",
     alt: "Enclosed yard with a wood walk gate",
   },
   replace: {
-    src: "/intents/replace.webp",
+    src: "/intents/replace.jpg",
     alt: "New fence panels replacing an older run",
   },
   boundary: {
-    src: "/intents/boundary.webp",
+    src: "/intents/boundary.jpg",
     alt: "Chain-link fence along a property boundary",
   },
   gate_area: {
-    src: "/intents/gate-area.webp",
+    src: "/intents/gate-area.jpg",
     alt: "Wood fence with a wide double gate",
   },
   pool_garden: {
-    src: "/intents/pool-garden.webp",
+    src: "/intents/pool-garden.jpg",
     alt: "Pool enclosure with a wood privacy fence",
   },
   modern: {
-    src: "/intents/modern.webp",
+    src: "/intents/modern.jpg",
     alt: "Modern horizontal charcoal wood fence",
   },
   calculate: {
-    src: "/intents/calculate.webp",
+    src: "/intents/calculate.jpg",
     alt: "Fence posts, panels, and materials ready to count",
   },
 };

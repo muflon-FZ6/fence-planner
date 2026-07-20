@@ -388,8 +388,6 @@ export function ProjectProvider({
     undo: () => dispatch({ type: "UNDO" }),
     redo: () => dispatch({ type: "REDO" }),
     reset: () => {
-      if (typeof window !== "undefined" && !window.confirm("Reset this project?"))
-        return;
       setProject(createEmptyProject({ name: "My Fence Plan" }));
     },
     duplicate: () => {
