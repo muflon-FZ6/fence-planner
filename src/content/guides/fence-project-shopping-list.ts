@@ -4,9 +4,9 @@ export const fenceProjectShoppingList: Guide = {
   slug: "fence-project-shopping-list",
   title: "Fence Project Shopping List",
   description:
-    "Turn a material estimate into a store-ready list, grouped by the actual fence system and with room to confirm product dimensions and prices.",
-  updated: "2026-07-19",
-  relatedTool: "/fence-material-calculator",
+    "Use the planner’s print-ready shopping list as the dynamic artifact, then verify product dimensions and local prices before you buy.",
+  updated: "2026-07-21",
+  relatedTool: "/fence-planner",
   relatedGuides: [
     "privacy-fence-materials-checklist",
     "chain-link-fence-materials-checklist",
@@ -20,37 +20,34 @@ export const fenceProjectShoppingList: Guide = {
     },
     {
       type: "p",
-      text: "Bring a list that separates posts, fill, concrete, gates, hardware, tools, and finishing items. Do not substitute a similarly named product without checking its installation dimensions.",
+      text: "Build the estimate in Fence Planner, open the shopping list, and print it. Then confirm the shelf product still matches the dimensions the list assumed. The app does not claim live SKU or inventory accuracy.",
     },
     {
       type: "h2",
-      text: "Why it matters",
-    },
-    {
-      type: "p",
-      text: "An ungrouped estimate is easy to shop incompletely. A mismatched product can make every quantity on the list wrong.",
-    },
-    {
-      type: "h2",
-      text: "Do this first",
+      text: "Primary artifact: planner shopping list",
     },
     {
       type: "ol",
       items: [
-        "Group the cart: posts, fill, rails or top rail, concrete, gates and hardware, then fasteners and finishing items.",
-        "Bring the layout diagram and notes on the product dimensions you assumed.",
-        "Confirm the product in your hands still matches those dimensions before you buy the full quantity.",
-        "Leave room on the list for unit prices and a small, labelled allowance for normal cuts or variation.",
+        "Finish the layout (or load a Scenario Studio example after confirming).",
+        "Open Shopping list from the planner tools bar.",
+        "Print the list / field sheet and keep it with your readiness notes.",
+        "At the store, check face widths, bag yield, mesh height, and hardware against that printout.",
       ],
     },
     {
+      type: "p",
+      text: "Start in the visual planner when you have a layout, or use the material calculator for a quick length-based estimate, then move into the planner printout for a grouped list.",
+    },
+    {
       type: "h2",
-      text: "Use Fence Planner for this part",
+      text: "Field kit pairing",
     },
     {
       type: "p",
-      text: "Start with the estimate, then add the manufacturer-specific components and a small, labelled allowance for normal cuts or variation.",
+      text: "Pair the shopping list with the Build Readiness Audit so dig/buy stops (boundary, rules, locates) are visible before you load the cart.",
     },
+    { type: "readiness_audit_cta" },
     {
       type: "h2",
       text: "Check before buying",

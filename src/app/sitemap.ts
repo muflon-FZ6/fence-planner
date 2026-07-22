@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { guides } from "@/content/guides";
+import { scenarioStudioEntries } from "@/content/scenarioStudio";
 import { requireSiteOriginForSitemap } from "@/lib/siteUrl";
 
 const STATIC_ROUTES = [
@@ -10,6 +11,7 @@ const STATIC_ROUTES = [
   "/terms",
   "/methodology",
   "/examples",
+  "/build-readiness",
   "/guides",
   "/fence-planner",
   "/fence-calculator",
@@ -43,5 +45,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticEntries, ...guideEntries];
+  const scenarioEntries: MetadataRoute.Sitemap = scenarioStudioEntries.map(
+    (e) => ({
+      url: `${origin}/examples/${e.slug}`,
+      lastModified: e.updated,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    }),
+  );
+
+  return [...staticEntries, ...guideEntries, ...scenarioEntries];
 }

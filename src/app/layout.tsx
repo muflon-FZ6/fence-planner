@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Unna } from "next/font/google";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { getSiteOrigin } from "@/lib/siteUrl";
+import { absoluteUrl, getSiteOrigin } from "@/lib/siteUrl";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -17,6 +17,8 @@ const unna = Unna({
 });
 
 const siteOrigin = getSiteOrigin();
+const rootDescription =
+  "Draw your fence layout, see the finished look, and get a clear material estimate. Free forever — no account required.";
 
 export const metadata: Metadata = {
   ...(siteOrigin ? { metadataBase: new URL(siteOrigin) } : {}),
@@ -24,8 +26,19 @@ export const metadata: Metadata = {
     default: "Fence Planner & Material Calculator | Free",
     template: "%s | Fence Planner",
   },
-  description:
-    "Draw your fence layout, see the finished look, and get a clear material estimate. Free forever — no account required.",
+  description: rootDescription,
+  ...(siteOrigin
+    ? {
+        alternates: { canonical: "/" },
+        openGraph: {
+          title: "Fence Planner & Material Calculator",
+          description: rootDescription,
+          type: "website",
+          url: absoluteUrl("/"),
+          siteName: "Fence Planner",
+        },
+      }
+    : {}),
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

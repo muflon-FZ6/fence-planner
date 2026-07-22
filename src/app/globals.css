@@ -111,10 +111,22 @@ h3,
     page-break-inside: avoid;
     page-break-after: auto;
   }
+
+  /* Build readiness field kit */
+  body.print-build-readiness .no-print {
+    display: none !important;
+  }
+
+  body.print-build-readiness .print-build-readiness-only {
+    display: block !important;
+  }
 }
 
-/* Screen only — must not apply in print (same specificity would win over @media print) */
 @media screen {
+  .print-build-readiness-only {
+    display: none !important;
+  }
+
   .print-only,
   .print-sheet,
   .shopping-list-print {

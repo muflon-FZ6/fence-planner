@@ -42,11 +42,54 @@ describe("guide content model & discovery", () => {
         defaultPostFace: 4,
         defaultMode: "panel_only",
       },
+      {
+        type: "sources",
+        title: "Sample sources",
+        sources: [
+          {
+            title: "Call 811",
+            organization: "Common Ground Alliance",
+            href: "https://call811.com/",
+            checked: "2026-07-21",
+            note: "US locate entry point",
+          },
+        ],
+      },
+      { type: "readiness_audit_cta", label: "Open audit" },
+      {
+        type: "slope_decision_lab",
+        defaultHorizontalFeet: 40,
+        defaultRiseInches: 12,
+        defaultBayFeet: 8,
+      },
     ];
-    expect(blocks).toHaveLength(5);
+    expect(blocks).toHaveLength(8);
     expect(
       estimateReadingMinutes({ title: "t", description: "d", body: blocks }),
     ).toBeGreaterThan(0);
+  });
+
+  it("validates sources blocks require title, organization, http(s) href, and checked date", () => {
+    for (const g of guides) {
+      for (const block of g.body) {
+        if (block.type !== "sources") continue;
+        expect(block.sources.length).toBeGreaterThan(0);
+        for (const s of block.sources) {
+          expect(s.title.trim().length, `${g.slug} source title`).toBeGreaterThan(
+            0,
+          );
+          expect(
+            s.organization.trim().length,
+            `${g.slug} source org`,
+          ).toBeGreaterThan(0);
+          expect(
+            s.href.startsWith("http://") || s.href.startsWith("https://"),
+            `${g.slug} bad href ${s.href}`,
+          ).toBe(true);
+          expect(s.checked).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        }
+      }
+    }
   });
 
   it("validates related guide slugs when present", () => {

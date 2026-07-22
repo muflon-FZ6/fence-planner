@@ -3,6 +3,15 @@ import type { ModuleWidthMode } from "@/domain/types";
 
 export type GuideCalloutTone = "tip" | "warn" | "note";
 
+export type GuideSource = {
+  title: string;
+  organization: string;
+  href: string;
+  /** ISO date YYYY-MM-DD when the URL was last verified */
+  checked: string;
+  note?: string;
+};
+
 export type GuideBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
@@ -54,6 +63,21 @@ export type GuideBlock =
       defaultEnteredWidth: number;
       defaultPostFace: number;
       defaultMode: ModuleWidthMode;
+    }
+  | {
+      type: "sources";
+      title?: string;
+      sources: GuideSource[];
+    }
+  | {
+      type: "readiness_audit_cta";
+      label?: string;
+    }
+  | {
+      type: "slope_decision_lab";
+      defaultHorizontalFeet: number;
+      defaultRiseInches: number;
+      defaultBayFeet: number;
     };
 
 export type Guide = {
@@ -76,6 +100,7 @@ function collectBlockText(b: GuideBlock, parts: string[]): void {
   if ("caption" in b && b.caption) parts.push(b.caption);
   if ("result" in b && b.result) parts.push(b.result);
   if ("rounding" in b && b.rounding) parts.push(b.rounding);
+  if ("label" in b && typeof b.label === "string" && b.label) parts.push(b.label);
   if ("items" in b && Array.isArray(b.items)) {
     for (const item of b.items) {
       if (typeof item === "string") parts.push(item);
@@ -86,9 +111,17 @@ function collectBlockText(b: GuideBlock, parts: string[]): void {
   if ("inputs" in b) parts.push(...b.inputs);
   if ("headers" in b) parts.push(...b.headers);
   if ("rows" in b) parts.push(...b.rows.flat());
+  if (b.type === "sources") {
+    for (const s of b.sources) {
+      parts.push(s.title, s.organization);
+      if (s.note) parts.push(s.note);
+    }
+  }
 }
 
-export function estimateReadingMinutes(guide: Pick<Guide, "body" | "title" | "description">): number {
+export function estimateReadingMinutes(
+  guide: Pick<Guide, "body" | "title" | "description">,
+): number {
   const parts: string[] = [guide.title, guide.description];
   for (const b of guide.body) collectBlockText(b, parts);
   const words = parts.join(" ").split(/\s+/).filter(Boolean).length;

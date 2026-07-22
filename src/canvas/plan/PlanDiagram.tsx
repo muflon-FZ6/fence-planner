@@ -90,8 +90,14 @@ export function PlanDiagram({
         viewBox={`${bounds.minX} ${bounds.minY} ${width} ${height}`}
         className="w-full border border-black/25 bg-[#f3f0e8]"
         role="img"
-        aria-label="Top-down measured fence plan"
+        aria-labelledby="plan-diagram-title plan-diagram-desc"
       >
+        <title id="plan-diagram-title">Top-down measured fence plan</title>
+        <desc id="plan-diagram-desc">
+          Grid-backed plan showing fence runs with length labels, posts by role,
+          and dashed gate openings where present. Post roles also appear as text
+          in the surrounding page summary — colour is not the only cue.
+        </desc>
         {gridLines.map((line, i) => (
           <line
             key={i}

@@ -1,7 +1,27 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { guides, estimateReadingMinutes } from "@/content/guides";
+import { absoluteUrl, getSiteOrigin } from "@/lib/siteUrl";
+
+const homeDescription =
+  "Draw a fence layout, preview styles, and get a free material estimate. Free forever — no account required.";
+
+export const metadata: Metadata = {
+  description: homeDescription,
+  ...(getSiteOrigin()
+    ? {
+        alternates: { canonical: "/" },
+        openGraph: {
+          title: "Fence Planner & Material Calculator",
+          description: homeDescription,
+          type: "website",
+          url: absoluteUrl("/"),
+        },
+      }
+    : {}),
+};
 
 export default function HomePage() {
   const jsonLd = {

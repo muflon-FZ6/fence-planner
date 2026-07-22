@@ -1,27 +1,27 @@
-"use client";
+import type { Metadata } from "next";
+import { FencePlannerClient } from "@/components/planner/FencePlannerClient";
+import { absoluteUrl, getSiteOrigin } from "@/lib/siteUrl";
 
-import dynamic from "next/dynamic";
-import { ProjectProvider } from "@/state/projectStore";
+const title = "Visual Fence Planner";
+const description =
+  "Draw your fence layout, preview styles, and print a materials list — free in your browser, no account required.";
 
-function PlannerLoading() {
-  return (
-    <div className="flex min-h-[50vh] items-center justify-center text-sm text-foreground/60">
-      Restoring your local project…
-    </div>
-  );
-}
-
-/** localStorage-backed planner — skip SSR so server HTML cannot disagree with the client. */
-const Workspace = dynamic(
-  () =>
-    import("@/components/planner/Workspace").then((module) => module.Workspace),
-  { ssr: false, loading: () => <PlannerLoading /> },
-);
+export const metadata: Metadata = {
+  title,
+  description,
+  ...(getSiteOrigin()
+    ? {
+        alternates: { canonical: "/fence-planner" },
+        openGraph: {
+          title,
+          description,
+          type: "website",
+          url: absoluteUrl("/fence-planner"),
+        },
+      }
+    : {}),
+};
 
 export default function FencePlannerPage() {
-  return (
-    <ProjectProvider>
-      <Workspace />
-    </ProjectProvider>
-  );
+  return <FencePlannerClient />;
 }

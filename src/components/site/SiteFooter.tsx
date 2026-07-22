@@ -34,6 +34,12 @@ export function SiteFooter() {
                 <Link href="/fence-calculator">Material calculator</Link>
               </li>
               <li>
+                <Link href="/examples">Scenario Studio</Link>
+              </li>
+              <li>
+                <Link href="/build-readiness">Build readiness</Link>
+              </li>
+              <li>
                 <Link href="/guides">Planning guides</Link>
               </li>
             </ul>
@@ -43,6 +49,9 @@ export function SiteFooter() {
             <ul className="mt-2 space-y-1 text-foreground/70">
               <li>
                 <Link href="/about">About</Link>
+              </li>
+              <li>
+                <Link href="/methodology">Methodology</Link>
               </li>
               <li>
                 <Link href="/contact">Contact</Link>

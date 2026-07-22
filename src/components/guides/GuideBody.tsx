@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GuideExampleCta } from "@/components/planner/ExampleLoader";
 import { PanelModuleExplorer } from "@/components/guides/PanelModuleExplorer";
+import { SlopeDecisionLab } from "@/components/guides/SlopeDecisionLab";
 import type { GuideBlock, GuideCalloutTone } from "@/content/guides/types";
 
 const calloutStyles: Record<GuideCalloutTone, string> = {
@@ -30,19 +31,13 @@ function renderBlock(block: GuideBlock, key: string): ReactNode {
       );
     case "h3":
       return (
-        <h3
-          key={key}
-          className="pt-2 text-lg font-semibold text-foreground"
-        >
+        <h3 key={key} className="pt-2 text-lg font-semibold text-foreground">
           {block.text}
         </h3>
       );
     case "ul":
       return (
-        <ul
-          key={key}
-          className="list-disc space-y-2 pl-5 marker:text-primary"
-        >
+        <ul key={key} className="list-disc space-y-2 pl-5 marker:text-primary">
           {block.items.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -173,6 +168,16 @@ function renderBlock(block: GuideBlock, key: string): ReactNode {
           />
         </div>
       );
+    case "slope_decision_lab":
+      return (
+        <div key={key}>
+          <SlopeDecisionLab
+            defaultHorizontalFeet={block.defaultHorizontalFeet}
+            defaultRiseInches={block.defaultRiseInches}
+            defaultBayFeet={block.defaultBayFeet}
+          />
+        </div>
+      );
     case "formula":
       return (
         <figure
@@ -214,6 +219,56 @@ function renderBlock(block: GuideBlock, key: string): ReactNode {
         <div key={key}>
           <GuideExampleCta exampleId={block.exampleId} label={block.label} />
         </div>
+      );
+    case "sources":
+      return (
+        <section
+          key={key}
+          className="rounded-xl border border-border bg-surface p-4"
+          aria-label={block.title ?? "Sources"}
+        >
+          <h3 className="font-display text-lg text-primary">
+            {block.title ?? "Sources"}
+          </h3>
+          <ul className="mt-3 space-y-3 text-sm">
+            {block.sources.map((s) => (
+              <li key={s.href}>
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  {s.title}
+                </a>
+                <span className="text-foreground/70">
+                  {" "}
+                  — {s.organization}
+                </span>
+                <span className="mt-0.5 block text-xs text-foreground/50">
+                  Checked {s.checked}
+                </span>
+                {s.note ? (
+                  <span className="mt-1 block text-foreground/75">{s.note}</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    case "readiness_audit_cta":
+      return (
+        <p key={key} className="not-prose mt-2">
+          <Link
+            href="/build-readiness"
+            className="inline-flex rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
+          >
+            {block.label ?? "Open the Build Readiness Audit"}
+          </Link>
+          <span className="mt-2 block text-xs text-foreground/55">
+            Printable field kit — answers stay in your browser.
+          </span>
+        </p>
       );
     default:
       return null;
